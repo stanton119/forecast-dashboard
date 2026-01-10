@@ -5,6 +5,43 @@
 **Status**: Draft  
 **Input**: User description: "Implement the feature specification based on the updated constitution. I want to build a static website that show various forecasts over time. This will initially only include a single page which shows a forecast of humidity over the next few days. It will also have a conversion of that humidity to what the relative humidity will be at a given indoor temperature. So we will have two lines - outdoor and indoor humidity over time. I want the indoor temperature (default of 20C) and UK location postcode (default of SW7) as parameters a user can pass in."
 
+## Clarifications
+
+### Session 2026-01-10
+
+
+- Forecast API availability: the chosen client-side runtime fetch strategy assumes the external forecast API supports CORS or a public JSON endpoint is available; if not, a small proxy or serverless function will be required.
+Integration notes from clarification: client-side runtime fetch selected — the page will fetch forecast data from an external forecast API at runtime in the browser for each view; defaults (SW7, 20°C) are applied client-side when parameters missing.
+
+## Integration & External Dependencies
+
+- **Forecast API (initial)**: `https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/{POST_CODE}` — use this endpoint as the primary data source for outdoor humidity and temperature.
+
+- **Expected response shape (observed from examples)**:
+  - Top-level object with `forecasts` key.
+  - Each forecast contains `detailed.reports[]` where each report includes:
+    - `localDate` (ISO date string),
+    - `timeslot` (HH:mm or HH format),
+    - `humidity` (percent),
+    - `temperatureC` (°C).
+
+- **Client-side requirements & constraints**:
+  - The client-side fetch approach REQUIRES the API to support CORS for browser requests. If CORS is not available, a small proxy or serverless function will be required to relay requests.
+  - Unknown rate limits: implement conservative retry/backoff, local in-browser caching (sessionStorage) for short TTL (e.g., 5–15 minutes), and exponential backoff on 5xx responses.
+  - Handle 4xx/5xx responses with user-friendly messages and graceful fallback to cached data when available.
+
+- **Failure modes & diagnostics**:
+  - 404/400: invalid postcode — surface clear validation error and suggest corrections.
+  - 429/5xx: rate limiting or upstream outage — show retry option and fall back to last-known data if present.
+  - Malformed payload: log and surface an error with a suggestion to retry.
+
+- **Security & privacy**:
+  - No sensitive keys are required for client-side use of this public endpoint; avoid embedding any secret API keys in client code.
+
+- **Recommendation**: Start with direct client-side fetch for MVP using this BBC endpoint; add a small serverless proxy (or CORS proxy) if the API blocks browser requests or if rate-limiting becomes an issue.
+
+- **Attribution**: The UI MUST display attribution to the data provider (e.g., "Data: BBC Weather") with a link to the provider's site. Attribution SHOULD be visible near the chart or in the page footer and include the data timestamp where practical.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -92,6 +129,7 @@ As a user who needs accessible output, I want the chart to include textual summa
 - **FR-004**: The system MUST present an accessible tabular view of the forecast data and provide a CSV export of timestamps with both humidity values.
 - **FR-005**: The system MUST validate postcode input and surface user-friendly errors if validation fails.
 - **FR-006**: The system MUST handle missing forecast data gracefully (retry, informative error, and fallback UI) and record the event for diagnostics.
+- **FR-007**: The UI MUST display attribution to the forecast data provider (e.g., "Data: BBC Weather") with a link; attribution should be visible near the chart or in the page footer.
 
 ### Key Entities
 
