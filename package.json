@@ -1,0 +1,20 @@
+{
+  "name": "forecast-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "astro": "^2.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.0.0",
+    "vitest": "^0.34.0",
+    "playwright": "^1.40.0"
+  }
+}
