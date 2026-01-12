@@ -1,24 +1,24 @@
 <!--
 Sync Impact Report
 
-- Version change: N/A → 0.1.0
+- Version change: 0.1.0 → 1.0.0
 - Modified principles:
-	- [PRINCIPLE_1_NAME] -> Code Quality & Maintainability
-	- [PRINCIPLE_2_NAME] -> Testing Standards (Test-First, CI)
-	- [PRINCIPLE_3_NAME] -> User Experience Consistency
-	- [PRINCIPLE_4_NAME] -> Performance Requirements
-	- [PRINCIPLE_5_NAME] -> Cross-cutting Standards (Observability, Versioning)
-- Added sections: Development Workflow, Governance (expanded)
-- Removed sections: none
+	- Testing Standards (Test-First, CI) -> REMOVED (governance change)
+	- Code Quality & Maintainability -> unchanged
+	- User Experience Consistency -> unchanged
+	- Performance Requirements -> unchanged
+	- Cross-cutting Standards (Observability, Versioning) -> unchanged
+- Removed sections:
+	- Testing Standards (entire principle removed)
 - Templates requiring updates:
 	- .specify/templates/plan-template.md ✅ updated
 	- .specify/templates/tasks-template.md ✅ updated
 	- .specify/templates/spec-template.md ✅ reviewed (no changes required)
-	- .specify/templates/commands/ ⚠ pending (no commands directory found)
-	- Runtime docs (README.md, docs/) ⚠ pending manual review
+	- .specify/templates/commands/ ⚠ pending (manual review - directory may not exist)
+	- Runtime docs (README.md, docs/) ⚠ pending manual review for references to testing or PRs
 - Follow-up TODOs:
 	- TODO(RATIFICATION_DATE): provide original ratification date
-	- Manual check: update any CI job descriptions referencing old gates
+	- Manual check: update any CI job descriptions referencing removed governance gates
 -->
 
 # Forecast Site Constitution
@@ -36,18 +36,6 @@ All code MUST be clear, well-structured, and reviewed. Requirements:
 Rationale: High-quality code reduces defects, lowers maintenance cost, and
 improves onboarding speed.
 
-### Testing Standards (Test-First, CI)
-Testing is non-negotiable. Requirements:
-
-- **MUST** follow a test-first approach: write tests that fail before
-	implementation (Red-Green-Refactor).
-- **MUST** include unit tests for logic, integration tests for contracts, and
-	end-to-end tests for critical user journeys as described in specs.
-- **MUST** all tests required by the spec be run in CI and pass before merge.
-
-Rationale: Tests ensure correctness, enable safe refactoring, and act as
-executable documentation for expected behavior.
-
 ### User Experience Consistency
 The product MUST provide predictable, accessible, and coherent UX. Requirements:
 
@@ -61,16 +49,16 @@ Rationale: Consistent UX reduces user friction and support costs; it preserves
 brand trust and accessibility.
 
 ### Performance Requirements
-Performance goals MUST be explicit and testable. Requirements:
+Performance goals MUST be explicit and measurable. Requirements:
 
 - **MUST** document measurable performance targets (latency, throughput,
 	memory) in the plan and spec where applicable.
-- **MUST** include at least one smoke performance test or benchmark for any
+- **MUST** include at least one smoke performance benchmark for any
 	feature with non-trivial performance impact.
 - **SHOULD** use p50/p95/p99 metrics and define acceptable thresholds.
 
 Rationale: Explicit performance goals prevent regressions and guide
-architecture and testing decisions.
+architecture and validation decisions.
 
 ### Cross-cutting Standards (Observability, Versioning, Security)
 Standards that apply to all work. Requirements:
@@ -90,7 +78,7 @@ traceable, and manageable at scale.
 Technology and deployment constraints for the Forecast Site project:
 
 - Preferred stack: minimal, well-supported tools; prefer stable LTS runtimes.
-- CI pipelines MUST include lint, test, and a basic build step.
+- CI pipelines MUST include lint and a basic build step.
 - Data retention, PII handling, and third-party integrations MUST be
 	documented in the spec when applicable.
 
@@ -98,11 +86,11 @@ Technology and deployment constraints for the Forecast Site project:
 
 Standards for how work is proposed, reviewed, and merged:
 
-- **PRs**: Every change MUST be submitted via a pull request with a clear
-	description, linked spec or task, and test evidence.
+- **Change Proposals**: Every change MUST be submitted with a clear
+	description, linked spec or task, and evidence of validation or verification.
 - **Reviews**: At least one approving review from a teammate with context is
 	REQUIRED for non-trivial changes; critical changes require two approvers.
-- **Quality Gates**: CI checks (lint, tests, build) MUST pass before merge.
+- **Quality Gates**: CI checks (lint, build) MUST pass before merge.
 - **Release Notes**: Every release that affects consumers MUST include
 	migration notes when breaking/intentional API changes occur.
 
@@ -125,5 +113,5 @@ Amendments, compliance, and versioning policy:
 	scheduled to ensure practices align with the Constitution. CI and template
 	checks SHOULD be added where feasible to prevent regressions.
 
-**Version**: 0.1.0 | **Ratified**: TODO(RATIFICATION_DATE): provide original adoption date | **Last Amended**: 2026-01-10
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): provide original adoption date | **Last Amended**: 2026-01-12
 

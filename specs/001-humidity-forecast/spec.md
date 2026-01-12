@@ -1,9 +1,9 @@
 # Feature Specification: Humidity Forecast (single-page)
 
-**Feature Branch**: `001-humidity-forecast`  
-**Created**: 2026-01-10  
-**Status**: Draft  
-**Input**: User description: "Implement the feature specification based on the updated constitution. I want to build a static website that show various forecasts over time. This will initially only include a single page which shows a forecast of humidity over the next few days. It will also have a conversion of that humidity to what the relative humidity will be at a given indoor temperature. So we will have two lines - outdoor and indoor humidity over time. I want the indoor temperature (default of 20C) and UK location postcode (default of SW7) as parameters a user can pass in."
+**Feature Branch**: `001-humidity-forecast`
+**Created**: 2026-01-10
+**Status**: Draft
+**Input**: User description: "Implement the feature specification based on the updated constitution. I want to build a static website that shows various forecasts over time. This will initially include a single page which shows a forecast of humidity over the next few days, and a conversion of that humidity to the expected indoor-relative-humidity for a given indoor temperature. Defaults: `indoor_temperature_c=20`, `postcode=SW7`."
 
 ## Clarifications
 
@@ -15,32 +15,34 @@ Integration notes from clarification: client-side runtime fetch selected — the
 
 ## Integration & External Dependencies
 
-- **Forecast API (initial)**: `https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/{POST_CODE}` — use this endpoint as the primary data source for outdoor humidity and temperature.
+- **Forecast data provider (initial)**: BBC Weather public data via the aggregated forecast endpoint. The weather data MUST be fetched from:
+  ```
+  https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/{POST_CODE}
+  ```
+  where `{POST_CODE}` is replaced with the user's supplied postcode (URL-encoded as necessary).
 
-- **Expected response shape (observed from examples)**:
-  - Top-level object with `forecasts` key.
-  - Each forecast contains `detailed.reports[]` where each report includes:
-    - `localDate` (ISO date string),
-    - `timeslot` (HH:mm or HH format),
-    - `humidity` (percent),
-    - `temperatureC` (°C).
+- **Expected response shape (summary)**:
+  - A time-ordered collection of forecast reports. Each report contains a local date, a timeslot, an outdoor humidity value (percent) and an outdoor temperature value (°C).
 
-- **Client-side requirements & constraints**:
-  - The client-side fetch approach REQUIRES the API to support CORS for browser requests. If CORS is not available, a small proxy or serverless function will be required to relay requests.
-  - Unknown rate limits: implement conservative retry/backoff, local in-browser caching (sessionStorage) for short TTL (e.g., 5–15 minutes), and exponential backoff on 5xx responses.
-  - Handle 4xx/5xx responses with user-friendly messages and graceful fallback to cached data when available.
+- **Operational constraints**:
+  - The client should gracefully handle upstream rate limits and transient errors (retry with backoff and sensible local caching).
+  - Validation and user-friendly error messages are required for invalid inputs and upstream failures.
 
-- **Failure modes & diagnostics**:
-  - 404/400: invalid postcode — surface clear validation error and suggest corrections.
-  - 429/5xx: rate limiting or upstream outage — show retry option and fall back to last-known data if present.
-  - Malformed payload: log and surface an error with a suggestion to retry.
+- **Attribution**: The UI MUST display attribution to the data provider (e.g., "Data: BBC Weather") with a visible link and a data timestamp where practical.
 
-- **Security & privacy**:
-  - No sensitive keys are required for client-side use of this public endpoint; avoid embedding any secret API keys in client code.
+## Data & Export Format (clarifications)
 
-- **Recommendation**: Start with direct client-side fetch for MVP using this BBC endpoint; add a small serverless proxy (or CORS proxy) if the API blocks browser requests or if rate-limiting becomes an issue.
+- **Parameter naming**: The canonical parameter names for the system are `postcode` (string) and `indoor_temperature_c` (number). All code, UI, query-strings and tests MUST use these exact identifiers.
 
-- **Attribution**: The UI MUST display attribution to the data provider (e.g., "Data: BBC Weather") with a link to the provider's site. Attribution SHOULD be visible near the chart or in the page footer and include the data timestamp where practical.
+- **Cache TTL**: Client-side caching TTL for forecast responses MUST be 10 minutes (600 seconds). Cache helpers will expose this TTL and tests will assert TTL behavior.
+
+- **Timestamp construction**: Compose timestamps by combining `localDate` (YYYY-MM-DD) and `timeslot` (HH or HH:mm) as local time for the forecast location. Normalize timestamps to ISO 8601 with an explicit timezone when displaying or exporting (e.g., `2026-01-10T14:00:00+00:00`). The UI SHOULD indicate the timezone used.
+
+- **CSV export schema**: CSV exports MUST include the following columns in order: `timestamp_iso` (ISO 8601 with timezone), `outside_humidity_percent` (integer or one decimal), `inside_relative_humidity_percent` (integer or one decimal), `outside_temp_c` (°C, one decimal). Numeric values SHOULD be rounded to one decimal place. Tests MUST validate CSV headers and value formatting.
+
+- **Postcode validation**: Implement a conservative UK postcode validation strategy: prefer a simple, permissive regex for UI validation (e.g., allow alphanumeric plus optional space) and rely on API response for exact locality validation. On client-side validation failure, show an inline validation error and do not call the API. On API 404 for unknown postcode, surface a clear error and suggest trying a different postcode.
+
+- **Test-First enforcement**: Per the Constitution, work MUST follow a test-first approach. Before implementing any non-trivial feature task, developers MUST add tests that demonstrate the expected behaviour and confirm they fail initially. CI MUST be configured to check that tests exist for new code and pass before merge (see `plan.md` and `tasks.md` updates).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -114,6 +116,27 @@ As a user who needs accessible output, I want the chart to include textual summa
 - Extreme indoor temperature inputs (e.g., <0°C or >50°C): clamp to reasonable bounds and warn the user.
 - Time zone differences: timestamps MUST be shown with locale-aware labels and a clear timezone hint.
 
+## Design & Visual Style (new)
+
+The product must use a clean, modern website template that prioritises clarity, readability and responsiveness. This is a design requirement (WHAT and WHY), not an implementation HOW.
+
+- **Overall intent**: a minimal, contemporary aesthetic with generous whitespace, clear typographic hierarchy, and focused content that highlights the forecast chart and controls.
+- **Responsiveness**: mobile-first responsive design; primary flows must work on narrow viewports without horizontal scrolling.
+- **Color & contrast**: neutral, lightly saturated palette with strong contrast between text and background; colour usage for data-series must be distinguishable for colour-blind users.
+- **Typography**: legible fonts, clear hierarchy (H1, H2, body, captions); comfortable line-length and spacing.
+- **Components**: consistent header, footer, form controls, chart container, data table, export button, permalink controls, and attribution area. Controls should be touch-friendly on mobile.
+- **Layout**: prominent chart area above the fold on desktop, with parameter controls and export/permalink controls nearby; data table accessible via a toggled panel or section.
+- **Visual polish**: subtle elevation, smooth spacing, clear micro-interactions for hover/focus, and visible focus states for keyboard navigation.
+- **Branding & theming**: template should be easily brandable (logo spot, primary accent colour) and support an optional light/dark theme.
+- **Accessibility**: meet WCAG AA contrast for text, provide keyboard focus order, and ensure chart data is available via accessible table/ARIA where appropriate.
+
+### Design Acceptance Scenarios
+
+1. **Given** the site loads on a mobile device, **When** the page is viewed, **Then** the chart, controls, and attribution are usable without horizontal scrolling and controls are finger-sized.
+2. **Given** a colour-blind user, **When** they view the chart, **Then** the two data series remain distinguishable (patterns, markers, or colour choices) and a legend is available.
+
+## Requirements *(mandatory)*
+
 ## Requirements *(mandatory)*
 
 <!--
@@ -130,6 +153,7 @@ As a user who needs accessible output, I want the chart to include textual summa
 - **FR-005**: The system MUST validate postcode input and surface user-friendly errors if validation fails.
 - **FR-006**: The system MUST handle missing forecast data gracefully (retry, informative error, and fallback UI) and record the event for diagnostics.
 - **FR-007**: The UI MUST display attribution to the forecast data provider (e.g., "Data: BBC Weather") with a link; attribution should be visible near the chart or in the page footer.
+- **FR-008 (Design Template)**: The UI MUST use a clean, modern website template as described in the "Design & Visual Style" section. The template requirement is technology-agnostic and testable via the Design Acceptance Scenarios.
 
 ### Key Entities
 
@@ -150,3 +174,8 @@ As a user who needs accessible output, I want the chart to include textual summa
 - **SC-002**: Default forecast (SW7, 20°C) renders correctly with two series for the next 72 hours on first load in 95% of attempts.
 - **SC-003**: Conversion accuracy: computed indoor-relative-humidity values match reference calculations within ±1 percentage point for typical temperatures (10–30°C).
 - **SC-004**: Export integrity: CSV exports contain the same timestamps and values shown in the UI; 100% of sampled exports must match displayed values.
+
+## Assumptions
+
+- Template choices are design-time decisions; the spec avoids prescribing frameworks or libraries to keep the requirement implementation-agnostic.
+- The design guideline expects the implementer to select an appropriate accessible template or adapt a lightweight UI kit without changing the functional behaviour described elsewhere in this spec.
