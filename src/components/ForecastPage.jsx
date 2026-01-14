@@ -19,6 +19,12 @@ const ForecastPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // handleParameterChange is now called by the debounced ParameterForm
+  const handleParameterChange = (newPostcode, newIndoorTemp) => {
+    setPostcode(newPostcode);
+    setIndoorTemp(newIndoorTemp);
+  };
+
   useEffect(() => {
     // Update URL when postcode or indoorTemp changes
     updateUrlParams(postcode, indoorTemp);
@@ -52,11 +58,6 @@ const ForecastPage = () => {
     fetchForecast();
   }, [postcode, indoorTemp]);
 
-  const handleParameterChange = (newPostcode, newIndoorTemp) => {
-    setPostcode(newPostcode);
-    setIndoorTemp(newIndoorTemp);
-  };
-
   const handleDownloadCsv = () => {
     downloadCsv('humidity_forecast.csv', forecastData);
   };
@@ -83,16 +84,17 @@ const ForecastPage = () => {
         </div>
       </section>
 
+      {/* Render loading/error messages and pass to children */}
       {loading && <p className="text-center text-blue-500">Loading forecast...</p>}
       {error && <p className="text-center text-red-500">Error: {error}</p>}
 
-      {!loading && !error && forecastData.length > 0 && (
+      {!loading && !error && (
         <>
           <section id="forecast-chart" className="mb-8">
-            <ForecastChart forecastData={forecastData} />
+            <ForecastChart forecastData={forecastData} isLoading={loading} error={error} />
           </section>
           <section id="data-table" className="mb-8">
-            <DataTable forecastData={forecastData} />
+            <DataTable forecastData={forecastData} isLoading={loading} error={error} />
           </section>
         </>
       )}

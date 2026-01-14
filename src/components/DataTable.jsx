@@ -1,6 +1,24 @@
 import React from 'react';
 
-const DataTable = ({ forecastData }) => {
+const DataTable = ({ forecastData, isLoading, error }) => {
+  if (isLoading) {
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md text-center">
+        <h2 className="text-xl font-semibold mb-4">Forecast Data Table</h2>
+        <p className="text-blue-500">Loading table data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md text-center">
+        <h2 className="text-xl font-semibold mb-4">Forecast Data Table</h2>
+        <p className="text-red-500">Error loading table: {error}</p>
+      </div>
+    );
+  }
+
   if (!forecastData || forecastData.length === 0) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md text-center">

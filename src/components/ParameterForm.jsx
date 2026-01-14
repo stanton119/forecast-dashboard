@@ -1,26 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { debounce } from '../lib/utils/debounce';
 
 const ParameterForm = ({ onParameterChange, currentPostcode, currentIndoorTemp, isLoading }) => {
-  const [postcode, setPostcode] = useState(currentPostcode);
-  const [indoorTemp, setIndoorTemp] = useState(currentIndoorTemp);
+  const [postcode, setPostcode] = useState(currentPostcode || '');
+  const [indoorTemp, setIndoorTemp] = useState(currentIndoorTemp || '');
 
+  // Debounced version of onParameterChange
+  const debouncedOnParameterChange = useCallback(
+    debounce((newPostcode, newIndoorTemp) => {
+      onParameterChange(newPostcode, newIndoorTemp);
+    }, 500), // 500ms debounce
+    [onParameterChange]
+  );
+
+  // Effect to call debouncedOnParameterChange when internal state changes
   useEffect(() => {
-    setPostcode(currentPostcode);
-  }, [currentPostcode]);
+    // Only call if both postcode and indoorTemp have values
+    if (postcode && indoorTemp) {
+      debouncedOnParameterChange(postcode, indoorTemp);
+    }
+  }, [postcode, indoorTemp, debouncedOnParameterChange]);
 
-  useEffect(() => {
-    setIndoorTemp(currentIndoorTemp);
-  }, [currentIndoorTemp]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onParameterChange(postcode, indoorTemp);
-  };
+  // If currentPostcode or currentIndoorTemp are meant to reset/initialize the form,
+  // we might need a separate mechanism or reconsider the state ownership.
+  // For now, assuming internal state takes precedence after initial render.
+  // The original useEffects for syncing with props are removed as per task T003's intent
+  // for internal management.
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Parameters</h2>
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4">
         <div>
           <label htmlFor="postcode" className="block text-gray-700 text-sm font-bold mb-2">
             UK Postcode:
@@ -49,15 +59,6 @@ const ParameterForm = ({ onParameterChange, currentPostcode, currentIndoorTemp, 
             disabled={isLoading}
           />
         </div>
-        <button
-          type="submit"
-          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-            isLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Loading...' : 'Get Forecast'}
-        </button>
       </form>
     </div>
   );
