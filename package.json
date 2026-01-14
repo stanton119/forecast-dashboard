@@ -7,14 +7,27 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest",
+    "test:e2e": "playwright test",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "astro": "^2.0.0",
+    "astro": "^5.16.9",
     "eslint": "^8.0.0",
+    "playwright": "^1.40.0",
     "prettier": "^2.0.0",
-    "vitest": "^0.34.0",
-    "playwright": "^1.40.0"
+    "vitest": "^0.34.0"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@playwright/test": "^1.57.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "recharts": "^3.6.0",
+    "tailwindcss": "^4.1.18",
+    "zod": "^4.3.5"
   }
 }

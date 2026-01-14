@@ -1,45 +1,52 @@
-export function pad2(n) {
-  return n.toString().padStart(2, '0')
-}
+import { z } from 'zod';
 
-export function toIsoWithTimezone(localDate, timeslot) {
-  // timeslot may be '14' or '14:00'
-  const hour = timeslot.split(':')[0]
-  const iso = `${localDate}T${pad2(hour)}:00:00+00:00`
-  return iso
-}
+// Zod schemas for validation
+const ReportSchema = z.object({
+  localDate: z.string(),
+  timeslot: z.string(),
+  humidity: z.number(),
+  temperatureC: z.number(),
+});
 
-export function processReports(reports) {
-  const out = []
-  reports.forEach((report) => {
-    const iso = toIsoWithTimezone(report.localDate, report.timeslot)
-    out.push({
-      timestamp_iso: iso,
-      outside_humidity_percent: report.humidity,
-      outside_temp_c: report.temperatureC
-    })
-  })
-  return out
-}
+const DetailedSchema = z.object({
+  reports: z.array(ReportSchema),
+});
 
-export function parseBBCAggregated(payload) {
-  if (!payload || !payload.forecasts) return []
-  let list = []
-  for (const key in payload.forecasts) {
-    const f = payload.forecasts[key]
-    if (f && f.detailed && Array.isArray(f.detailed.reports)) {
-      list = list.concat(processReports(f.detailed.reports))
+const ForecastSchema = z.object({
+  detailed: DetailedSchema,
+});
+
+const BbcResponseSchema = z.object({
+  forecasts: z.array(ForecastSchema),
+});
+
+/**
+ * Fetches the weather forecast for a given postcode.
+ * @param {string} postcode - The UK postcode.
+ * @returns {Promise<Array<{timestamp_iso: string, outside_humidity_percent: number, outside_temp_c: number}>>}
+ */
+export async function getForecast(postcode) {
+  const url = `https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/${postcode}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch forecast: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const parsedData = BbcResponseSchema.parse(data);
+
+  const forecastSeries = [];
+  for (const forecast of parsedData.forecasts) {
+    for (const report of forecast.detailed.reports) {
+      const timestamp = new Date(`${report.localDate}T${report.timeslot}:00.000Z`);
+      forecastSeries.push({
+        timestamp_iso: timestamp.toISOString(),
+        outside_humidity_percent: report.humidity,
+        outside_temp_c: report.temperatureC,
+      });
     }
   }
-  return list
-}
 
-export async function fetchBBCForecast(postcode) {
-  const url = `https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/${encodeURIComponent(postcode)}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error('Network response was not ok')
-  const data = await res.json()
-  return parseBBCAggregated(data)
+  return forecastSeries;
 }
-
-export default { parseBBCAggregated, fetchBBCForecast }

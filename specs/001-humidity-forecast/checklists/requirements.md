@@ -1,3 +1,4 @@
+```markdown
 # Specification Quality Checklist: Humidity Forecast
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
@@ -32,3 +33,5 @@
 ## Notes
 
 - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`
+
+```

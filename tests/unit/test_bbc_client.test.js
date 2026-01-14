@@ -1,27 +1,59 @@
-import { describe, it, expect } from 'vitest'
-import { parseBBCAggregated } from '../../../src/lib/bbc-client.js'
+import { describe, it, expect, vi } from 'vitest';
+import { getForecast } from '../../src/lib/bbc-client';
 
-describe('BBC aggregated parser', () => {
-  it('parses aggregated forecast payload into standardized series', () => {
-    const sample = {
-      forecasts: {
-        '2026-01-10': {
+// Mock the global fetch function
+global.fetch = vi.fn();
+
+describe('BBC Weather API Client', () => {
+  it('should fetch and parse weather data for a valid postcode', async () => {
+    const mockSuccessResponse = {
+      forecasts: [
+        {
           detailed: {
             reports: [
-              { localDate: '2026-01-10', timeslot: '14', humidity: 70, temperatureC: 5 }
-            ]
-          }
-        }
-      }
-    }
+              {
+                localDate: "2026-01-12",
+                timeslot: "12:00",
+                humidity: 75,
+                temperatureC: 9,
+              },
+            ],
+          },
+        },
+      ],
+    };
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockSuccessResponse),
+    });
 
-    const out = parseBBCAggregated(sample)
-    expect(Array.isArray(out)).toBe(true)
-    expect(out.length).toBe(1)
-    expect(out[0]).toEqual({
-      timestamp_iso: '2026-01-10T14:00:00+00:00',
-      outside_humidity_percent: 70,
-      outside_temp_c: 5
-    })
-  })
-})
+    const forecast = await getForecast('SW7');
+
+    expect(fetch).toHaveBeenCalledWith('https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/SW7');
+    expect(forecast).toEqual([
+        {
+            "timestamp_iso": "2026-01-12T12:00:00.000Z",
+            "outside_humidity_percent": 75,
+            "outside_temp_c": 9,
+        }
+    ]);
+  });
+
+  it('should handle 404 for an invalid postcode', async () => {
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 404,
+    });
+
+    await expect(getForecast('INVALID')).rejects.toThrow('Failed to fetch forecast: 404');
+  });
+
+  it('should handle server errors', async () => {
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+    });
+
+    await expect(getForecast('SW7')).rejects.toThrow('Failed to fetch forecast: 500');
+  });
+});

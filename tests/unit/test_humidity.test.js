@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getInsideRelativeHumidity } from '../../../src/lib/humidity.js';
+import { getInsideRelativeHumidity } from '../../src/lib/humidity.js';
 
 describe('humidity conversions', () => {
   it('returns same RH when indoor and outdoor temperatures equal', () => {

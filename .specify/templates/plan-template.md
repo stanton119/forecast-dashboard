@@ -31,16 +31,7 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Required gates (derived from project constitution):
-
-- **Code Quality**: Linting, static analysis, and code review checks pass.
-- **Testing Standards**: Unit, integration, and contract tests exist for the scope
-  stated in the spec and are included in CI; tests are written first and fail
-  before implementation.
-- **User Experience Consistency**: Acceptance criteria and UX approval for
-  primary user flows are documented and validated in design artifacts.
-- **Performance Requirements**: Measurable performance targets and constraints
-  are listed and a basic benchmark or smoke performance test exists.
+[Gates determined based on constitution file]
 
 ## Project Structure
 

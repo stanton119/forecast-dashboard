@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+tests/
+*.log
+.DS_Store
+.vscode/
+.idea/
+.gitignore
+.npmrc
+*.swp
+*.tmp

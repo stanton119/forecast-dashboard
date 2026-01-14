@@ -1,32 +1,35 @@
 /**
- * Humidity conversion helpers
- * Exports:
- * - saturatePressure(tempC): saturation vapor pressure approximation
- * - getInsideRelativeHumidity(outsideTempC, outsideHumidityPercent, indoorTempC)
+ * Calculates the saturation vapor pressure (SVP) at a given temperature.
+ * Uses the Magnus-Tetens formula, a common approximation.
+ * @param {number} tempC - Temperature in degrees Celsius.
+ * @returns {number} Saturation vapor pressure in hPa.
  */
-
-export function saturatePressure(tempC) {
-  // Magnus approximation (hPa)
-  return 6.122 * Math.exp((17.62 * tempC) / (243.12 + tempC));
+function getSaturationVaporPressure(tempC) {
+  return 6.112 * Math.exp((17.67 * tempC) / (tempC + 243.5));
 }
 
-export function getInsideRelativeHumidity(outsideTempC, outsideHumidityPercent, indoorTempC) {
-  if (outsideTempC == null || outsideHumidityPercent == null || indoorTempC == null) {
-    throw new Error('Missing input');
-  }
+/**
+ * Calculates the indoor relative humidity based on outdoor conditions and indoor temperature.
+ * Assumes no change in absolute humidity (no indoor moisture sources/sinks).
+ * @param {number} outsideTempC - Outdoor temperature in degrees Celsius.
+ * @param {number} outsideRH - Outdoor relative humidity as a percentage (e.g., 65 for 65%).
+ * @param {number} indoorTempC - Indoor temperature in degrees Celsius.
+ * @returns {number} Indoor relative humidity as a percentage.
+ */
+export function getInsideRelativeHumidity(outsideTempC, outsideRH, indoorTempC) {
+  // 1. Calculate the saturation vapor pressure outdoors.
+  const svpOutside = getSaturationVaporPressure(outsideTempC);
 
-  const outsideK = outsideTempC + 273.15;
-  const indoorK = indoorTempC + 273.15;
+  // 2. Calculate the actual vapor pressure outdoors.
+  const avp = (outsideRH / 100) * svpOutside;
 
-  const satOutside = saturatePressure(outsideTempC);
-  const satIndoor = saturatePressure(indoorTempC);
+  // 3. The actual vapor pressure remains constant as air moves indoors and heats up.
 
-  // Formula derived from Clausius-Clapeyron relation and humidity scaling
-  const insideRH = (indoorK * outsideHumidityPercent * satOutside) / (outsideK * satIndoor);
+  // 4. Calculate the saturation vapor pressure indoors.
+  const svpInside = getSaturationVaporPressure(indoorTempC);
 
-  // Clamp to [0, 100]
-  const clamped = Math.max(0, Math.min(100, insideRH));
-  return Math.round(clamped * 10) / 10; // one decimal
+  // 5. Calculate the new indoor relative humidity.
+  const insideRH = (avp / svpInside) * 100;
+
+  return insideRH;
 }
-
-export default { saturatePressure, getInsideRelativeHumidity };

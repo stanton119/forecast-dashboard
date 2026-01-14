@@ -1,55 +1,66 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
-export default function ParameterForm() {
-  const [postcode, setPostcode] = useState('SW7')
-  const [indoor, setIndoor] = useState(20)
+const ParameterForm = ({ onParameterChange, currentPostcode, currentIndoorTemp, isLoading }) => {
+  const [postcode, setPostcode] = useState(currentPostcode);
+  const [indoorTemp, setIndoorTemp] = useState(currentIndoorTemp);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const p = params.get('postcode')
-    const t = params.get('indoor_temperature_c')
-    if (p) setPostcode(p)
-    if (t) setIndoor(Number(t))
-  }, [])
+    setPostcode(currentPostcode);
+  }, [currentPostcode]);
 
-  function updateUrl(p, t) {
-    const params = new URLSearchParams(window.location.search)
-    params.set('postcode', p)
-    params.set('indoor_temperature_c', String(t))
-    const newUrl = `${window.location.pathname}?${params.toString()}`
-    history.pushState({}, '', newUrl)
-  }
+  useEffect(() => {
+    setIndoorTemp(currentIndoorTemp);
+  }, [currentIndoorTemp]);
 
-  function onSubmit(e) {
-    e.preventDefault()
-    const p = postcode.trim()
-    const t = Number(indoor)
-    updateUrl(p, t)
-    window.dispatchEvent(new CustomEvent('paramsChange', { detail: { postcode: p, indoor_temperature_c: t } }))
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onParameterChange(postcode, indoorTemp);
+  };
 
   return (
-    <form onSubmit={onSubmit} aria-label="Forecast parameters">
-      <label>
-        Postcode:
-        <input
-          name="postcode"
-          value={postcode}
-          onChange={(e) => setPostcode(e.target.value)}
-          aria-label="postcode"
-        />
-      </label>
-      <label>
-        Indoor temperature (°C):
-        <input
-          name="indoor_temperature_c"
-          type="number"
-          value={indoor}
-          onChange={(e) => setIndoor(e.target.value)}
-          aria-label="indoor temperature c"
-        />
-      </label>
-      <button type="submit">Update</button>
-    </form>
-  )
-}
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4">Parameters</h2>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="postcode" className="block text-gray-700 text-sm font-bold mb-2">
+            UK Postcode:
+          </label>
+          <input
+            type="text"
+            id="postcode"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="e.g., SW7"
+            value={postcode}
+            onChange={(e) => setPostcode(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+        <div>
+          <label htmlFor="indoorTemp" className="block text-gray-700 text-sm font-bold mb-2">
+            Indoor Temperature (&deg;C):
+          </label>
+          <input
+            type="number"
+            id="indoorTemp"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="e.g., 20"
+            value={indoorTemp}
+            onChange={(e) => setIndoorTemp(parseInt(e.target.value, 10))}
+            disabled={isLoading}
+          />
+        </div>
+        <button
+          type="submit"
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : 'Get Forecast'}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default ParameterForm;
