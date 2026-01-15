@@ -20,20 +20,21 @@ This feature implements automatic reloading of the humidity forecast when parame
 **Target Platform**: Web browser
 **Project Type**: Web (single page application, client-side focus for this feature)
 **Performance Goals**:
+
 - Forecast display updates within 2 seconds of a parameter change in 95% of cases.
 - Loading indicator visible within 0.5 seconds of a parameter change.
-**Constraints**:
+  **Constraints**:
 - Effectively handle invalid postcode entries, displaying an error message within 1 second.
 - Minimal impact on existing page load performance.
-**Scale/Scope**: Single user, client-side application. The feature focuses on improving user experience for individual interactions, not large-scale data processing or multi-user concurrency.
+  **Scale/Scope**: Single user, client-side application. The feature focuses on improving user experience for individual interactions, not large-scale data processing or multi-user concurrency.
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 No active constitutional gates are defined in `.specify/memory/constitution.md` for this project.
 
-*Re-evaluation Post-Design*: N/A (no active gates)
+_Re-evaluation Post-Design_: N/A (no active gates)
 
 ## Project Structure
 
@@ -75,7 +76,7 @@ tests/
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

@@ -8,6 +8,6 @@ test('Default view shows the forecast chart', async ({ page }) => {
   await expect(chart).toBeVisible();
 
   // Check that there are two lines on the chart
-    const lines = chart.locator('path.recharts-curve');
-    await expect(lines).toHaveCount(2);
+  const lines = chart.locator('path.recharts-curve');
+  await expect(lines).toHaveCount(2);
 });

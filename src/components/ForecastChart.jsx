@@ -46,9 +46,9 @@ const ForecastChart = ({ forecastData, isLoading, error }) => {
       minute: '2-digit',
     }),
     date: new Date(d.timestamp_iso).toLocaleDateString([], {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
     }),
     outsideHumidity: parseFloat(d.outside_humidity_percent),
     insideHumidity: parseFloat(d.inside_relative_humidity_percent),
@@ -58,7 +58,7 @@ const ForecastChart = ({ forecastData, isLoading, error }) => {
   const getXAxisTick = (value, index) => {
     // Only show date for the first entry of each day
     if (index === 0 || formattedData[index - 1].date !== formattedData[index].date) {
-        return formattedData[index].date;
+      return formattedData[index].date;
     }
     return '';
   };
@@ -68,7 +68,9 @@ const ForecastChart = ({ forecastData, isLoading, error }) => {
       const data = payload[0].payload;
       return (
         <div className="p-3 bg-white border border-gray-300 rounded shadow-lg text-sm">
-          <p className="font-bold">{data.date} {data.timestamp}</p>
+          <p className="font-bold">
+            {data.date} {data.timestamp}
+          </p>
           <p style={{ color: payload[0].stroke }}>Outdoor: {data.outsideHumidity}%</p>
           <p style={{ color: payload[1].stroke }}>Indoor: {data.insideHumidity}%</p>
         </div>
@@ -76,7 +78,6 @@ const ForecastChart = ({ forecastData, isLoading, error }) => {
     }
     return null;
   };
-
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">

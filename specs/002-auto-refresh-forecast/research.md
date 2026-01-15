@@ -7,6 +7,7 @@
 **Rationale**: Rapid successive changes to input parameters could lead to numerous, redundant API requests, potentially impacting performance (client-side and API) and user experience. Debouncing ensures that the API call is triggered only after a user has stopped typing/changing the input for a specified duration.
 
 **Alternatives considered**:
+
 - **Throttling**: Limits the rate at which a function can be called. While useful for certain scenarios (e.g., scroll events), debouncing is generally more appropriate for user input fields where the final value after a pause is most relevant.
 - **No debouncing/throttling**: Rejected due to the potential for poor performance and increased API load.
 
@@ -17,6 +18,7 @@
 **Rationale**: The existing project uses React components. `useState` and `useEffect` are standard, efficient patterns for local component state and side effects (like data fetching based on dependencies) in React. Given the relatively contained scope of the feature, they should suffice.
 
 **Alternatives considered**:
+
 - **Redux/Zustand/Other global state libraries**: Overkill for this feature's current scope, which primarily involves managing state for a single page.
 - **Prop drilling (without hooks)**: Can become cumbersome and lead to less maintainable code if parameters need to be passed through many layers of components.
 
@@ -27,7 +29,7 @@
 **Rationale**: Providing immediate and clear feedback to the user when an error occurs is crucial for a good user experience. This helps users understand what went wrong and how to correct it.
 
 **Alternatives considered**:
+
 - **Browser alerts**: Disruptive and generally poor UX.
 - **Console logging only**: Not user-facing, defeats the purpose of informing the user.
 - **Generic error page**: Overkill for input validation or temporary API issues.
-

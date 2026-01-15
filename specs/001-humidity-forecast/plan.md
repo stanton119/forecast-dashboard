@@ -13,27 +13,28 @@ This plan outlines the implementation of a single-page web application to displa
 ## Technical Context
 
 **Language/Version**: Node.js (as per project environment), Astro (^5.16.8), React (18.2.0)
-**Primary Dependencies**: 
+**Primary Dependencies**:
+
 - Astro.js
 - React
 - Tailwind CSS (to be installed via `npx astro add tailwind`)
 - Vitest (for unit tests)
 - Playwright (for E2E tests)
-**Storage**: N/A (Client-side, data fetched from API)
-**Testing**: `vitest` for unit tests, `playwright` for E2E tests.
-**Target Platform**: Web Browser
-**Project Type**: Web application (Static Site)
-**Performance Goals**: Page loads and displays the forecast chart within 2 seconds on a typical broadband connection (p95).
-**Constraints**: 
+  **Storage**: N/A (Client-side, data fetched from API)
+  **Testing**: `vitest` for unit tests, `playwright` for E2E tests.
+  **Target Platform**: Web Browser
+  **Project Type**: Web application (Static Site)
+  **Performance Goals**: Page loads and displays the forecast chart within 2 seconds on a typical broadband connection (p95).
+  **Constraints**:
 - Client-side data fetching from BBC Weather API.
 - Graceful handling of API errors and rate limits.
 - Attribution to the data provider is required.
 - Permissive postcode validation on the client-side.
-**Scale/Scope**: A single-page application for viewing humidity forecasts with parameter adjustment and sharing capabilities.
+  **Scale/Scope**: A single-page application for viewing humidity forecasts with parameter adjustment and sharing capabilities.
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **Test-First (NON-NEGOTIABLE)**: As per `spec.md`, a test-first approach is mandatory. Tests demonstrating expected behavior must be written before implementation.
 - **Integration Testing**: Required for the BBC Weather API client to ensure the contract is met.
@@ -73,5 +74,5 @@ tests/
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| N/A       | N/A        | N/A                                 |
+| --------- | ---------- | ------------------------------------ |
+| N/A       | N/A        | N/A                                  |

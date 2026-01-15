@@ -1,9 +1,8 @@
-```markdown
-# Specification Quality Checklist: Humidity Forecast
+# Specification Quality Checklist: Optimize Auto-Refresh API Calls
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-01-10
-**Feature**: [spec.md](specs/001-humidity-forecast/spec.md)
+**Created**: January 14, 2026
+**Feature**: ../../specs/003-optimize-auto-refresh/spec.md
 
 ## Content Quality
 
@@ -33,4 +32,3 @@
 ## Notes
 
 - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`
-```

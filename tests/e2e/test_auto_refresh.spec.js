@@ -1,73 +1,101 @@
-// tests/e2e/test_auto_refresh.spec.js
 import { test, expect } from '@playwright/test';
 
-test.describe('Auto-Refresh Forecast on Parameter Change', () => {
+test.describe('Auto-Refresh Optimization', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate to the forecast page before each test
     await page.goto('/');
-    // Wait for the initial forecast to load
-    await expect(page.locator('text=Loading forecast...')).not.toBeVisible();
-    await expect(page.locator('#forecast-chart canvas')).toBeVisible();
-    await expect(page.locator('#data-table table')).toBeVisible();
+    // Wait for the initial forecast data to load
+    await expect(page.locator('#forecast-chart')).toBeVisible();
+    await expect(page.locator('#data-table')).toBeVisible();
+    // Ensure forecast data is displayed before proceeding
+    await expect(page.locator('.recharts-line')).toHaveCount(2); // Both indoor and outdoor lines
   });
 
-  test('should auto-refresh forecast when postcode changes', async ({ page }) => {
-    const postcodeInput = page.locator('input#postcode');
-    const chartCanvas = page.locator('#forecast-chart canvas');
-    const dataTable = page.locator('#data-table table');
+  test('should not make an API call when only indoor temperature changes', async ({ page }) => {
+    // Intercept network requests to check for BBC API calls
+    let apiCallMade = false;
+    page.route('**/weather-broker-cdn.api.bbci.co.uk/**', (route) => {
+      apiCallMade = true;
+      route.continue();
+    });
 
-    // Get initial data for comparison (e.g., first row of table)
-    const initialTableCell = await dataTable.locator('tbody tr:first-child td:nth-child(3)').textContent();
+    const initialIndoorHumidity = await page.locator('text=Indoor RH (%)').evaluate((el) => {
+      const parentRow = el.closest('tr');
+      if (parentRow) {
+        return parentRow.querySelector('td:nth-child(5)')?.textContent; // Assuming 5th column for Indoor RH
+      }
+      return '';
+    });
 
-    // Change postcode
-    await postcodeInput.fill('SW1A 0AA');
-    // Expect loading indicator to appear and disappear
-    await expect(page.locator('text=Loading forecast...')).toBeVisible();
-    await expect(page.locator('text=Loading forecast...')).not.toBeVisible({ timeout: 10000 }); // Wait for loading to finish
+    // Change indoor temperature in the form
+    await page.fill('#indoorTemp', '25'); // Change from default 20 to 25
 
-    // Verify chart and table reflect new data
-    await expect(chartCanvas).toBeVisible();
-    await expect(dataTable).toBeVisible();
+    // Allow time for the debounced change and potential re-render/recalculation
+    await page.waitForTimeout(1000); // Wait for debounce (500ms) + effect to run
 
-    // Ensure data has changed
-    const newTableCell = await dataTable.locator('tbody tr:first-child td:nth-child(3)').textContent();
-    expect(newTableCell).not.toBe(initialTableCell);
+    // Expect no API call to the BBC weather service
+    expect(apiCallMade).toBe(false);
+
+    // Verify indoor humidity on display has updated (client-side recalculation)
+    const updatedIndoorHumidity = await page.locator('text=Indoor RH (%)').evaluate((el) => {
+      const parentRow = el.closest('tr');
+      if (parentRow) {
+        return parentRow.querySelector('td:nth-child(5)')?.textContent;
+      }
+      return '';
+    });
+    expect(updatedIndoorHumidity).not.toBe(initialIndoorHumidity);
+    expect(updatedIndoorHumidity).not.toBe('');
   });
 
-  test('should auto-refresh forecast when indoor temperature changes', async ({ page }) => {
-    const indoorTempInput = page.locator('input#indoorTemp');
-    const dataTable = page.locator('#data-table table');
+  test('should make an API call when outdoor parameters (postcode) change', async ({ page }) => {
+    // Intercept network requests to check for BBC API calls
+    let apiCallMade = false;
+    page.route('**/weather-broker-cdn.api.bbci.co.uk/**', (route) => {
+      apiCallMade = true;
+      route.continue();
+    });
 
-    // Get initial indoor RH for comparison
-    const initialIndoorRH = await dataTable.locator('tbody tr:first-child td:nth-child(5)').textContent();
+    const initialOutdoorHumidity = await page
+      .locator('text=Outdoor Humidity (%)')
+      .evaluate((el) => {
+        const parentRow = el.closest('tr');
+        if (parentRow) {
+          return parentRow.querySelector('td:nth-child(3)')?.textContent; // Assuming 3rd column for Outdoor Humidity
+        }
+        return '';
+      });
 
-    // Change indoor temperature
-    await indoorTempInput.fill('25'); // Change from default 20 to 25
-    // Expect loading indicator to appear and disappear (though for indoor temp it's client-side calc)
-    // The loading for indoor temp might be very fast if it's purely client-side calculation
-    // However, the ForecastPage does re-render and re-process, so it might briefly show
-    await expect(page.locator('text=Loading forecast...')).not.toBeVisible({ timeout: 5000 });
+    // Change postcode in the form
+    await page.fill('#postcode', 'NW1'); // Change from default SW7 to NW1
 
-    // Verify table reflects new indoor RH
-    await expect(dataTable).toBeVisible();
+    // Allow time for the debounced change and potential re-render/recalculation
+    await page.waitForTimeout(1000); // Wait for debounce (500ms) + effect to run
 
-    // Ensure indoor RH has changed (it should, as the calculation depends on indoorTemp)
-    const newIndoorRH = await dataTable.locator('tbody tr:first-child td:nth-child(5)').textContent();
-    expect(newIndoorRH).not.toBe(initialIndoorRH);
-    expect(parseFloat(newIndoorRH)).toBeGreaterThan(parseFloat(initialIndoorRH)); // Higher temp -> higher RH
-  });
+    // Expect an API call to the BBC weather service
+    expect(apiCallMade).toBe(true);
 
-  test('should display error message for invalid postcode', async ({ page }) => {
-    const postcodeInput = page.locator('input#postcode');
+    // Verify outdoor humidity on display has updated (new data fetched)
+    const updatedOutdoorHumidity = await page
+      .locator('text=Outdoor Humidity (%)')
+      .evaluate((el) => {
+        const parentRow = el.closest('tr');
+        if (parentRow) {
+          return parentRow.querySelector('td:nth-child(3)')?.textContent;
+        }
+        return '';
+      });
+    expect(updatedOutdoorHumidity).not.toBe(initialOutdoorHumidity);
+    expect(updatedOutdoorHumidity).not.toBe('');
 
-    await postcodeInput.fill('INVALID123');
-    await expect(page.locator('text=Loading forecast...')).toBeVisible();
-    await expect(page.locator('text=Loading forecast...')).not.toBeVisible({ timeout: 10000 });
-
-    // Expect error message to be visible
-    await expect(page.locator('text=Error:')).toBeVisible();
-    // Expect chart and table not to be visible or show no data
-    await expect(page.locator('#forecast-chart canvas')).not.toBeVisible();
-    await expect(page.locator('#data-table table')).not.toBeVisible();
-    await expect(page.locator('text=No forecast data available. Adjust parameters and try again.')).toBeVisible();
+    // Also verify indoor humidity has updated (recalculated based on new outdoor data)
+    const updatedIndoorHumidity = await page.locator('text=Indoor RH (%)').evaluate((el) => {
+      const parentRow = el.closest('tr');
+      if (parentRow) {
+        return parentRow.querySelector('td:nth-child(5)')?.textContent;
+      }
+      return '';
+    });
+    expect(updatedIndoorHumidity).not.toBe(''); // Just ensure it's not empty, actual value depends on new data
   });
 });

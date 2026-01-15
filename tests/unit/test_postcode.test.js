@@ -18,11 +18,11 @@ describe('Postcode Validation', () => {
     expect(isValidPostcode('INVALID')).toBe(false);
   });
 
-    it('should return false for an empty string', () => {
+  it('should return false for an empty string', () => {
     expect(isValidPostcode('')).toBe(false);
-    });
+  });
 
-    it('should return false for a null value', () => {
+  it('should return false for a null value', () => {
     expect(isValidPostcode(null)).toBe(false);
-    });
+  });
 });

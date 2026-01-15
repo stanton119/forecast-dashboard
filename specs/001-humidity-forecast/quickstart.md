@@ -13,12 +13,14 @@ This document provides instructions on how to set up and run the humidity foreca
 ## Installation
 
 1.  **Clone the repository**:
+
     ```bash
     git clone <repository-url>
     cd forecast-site
     ```
 
 2.  **Install dependencies**:
+
     ```bash
     npm install
     ```
@@ -32,9 +34,11 @@ This document provides instructions on how to set up and run the humidity foreca
 ## Running the Application
 
 1.  **Start the development server**:
+
     ```bash
     npm run dev
     ```
+
     This will start the Astro development server, typically on `http://localhost:4321`.
 
 2.  **Open in browser**:
@@ -43,6 +47,7 @@ This document provides instructions on how to set up and run the humidity foreca
 ## Running Tests
 
 - **Unit Tests**:
+
   ```bash
   npm run test
   ```

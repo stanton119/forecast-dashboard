@@ -31,8 +31,8 @@ No new explicit setup tasks are required, as the project structure is already es
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T001 [P] Create a utility directory `src/lib/utils/` if it doesn't exist.
-- [X] T002 [P] Create a utility function for debouncing in `src/lib/utils/debounce.js`.
+- [x] T001 [P] Create a utility directory `src/lib/utils/` if it doesn't exist.
+- [x] T002 [P] Create a utility function for debouncing in `src/lib/utils/debounce.js`.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -47,19 +47,19 @@ This can be fully tested by changing a parameter (postcode or indoor temperature
 
 ### Implementation for User Story 1
 
-- [X] T003 [US1] Modify `src/components/ParameterForm.jsx` to internally manage `postcode` and `indoorTemperature` state.
-- [X] T004 [US1] Implement debounced change handling for `postcode` input in `src/components/ParameterForm.jsx` using `src/lib/utils/debounce.js`.
-- [X] T005 [US1] Implement debounced change handling for `indoorTemperature` input in `src/components/ParameterForm.jsx` using `src/lib/utils/debounce.js`.
-- [X] T006 [US1] Expose a callback from `src/components/ParameterForm.jsx` to `src/components/ForecastPage.jsx` for debounced parameter changes.
-- [X] T007 [US1] In `src/components/ForecastPage.jsx`, implement state to hold `UserParameters` (postcode, indoor temperature), `ForecastData`, `loading` status, and `error` messages.
-- [X] T008 [US1] In `src/components/ForecastPage.jsx`, use React's `useEffect` to trigger `getForecast` from `src/lib/bbc-client.js` whenever `UserParameters.postcode` changes (debounced).
-- [X] T009 [US1] In `src/components/ForecastPage.jsx`, manage the `loading` state (set `true` before, `false` after) around `getForecast` calls and indoor humidity calculations.
-- [X] T010 [US1] In `src/components/ForecastPage.jsx`, implement error handling for `getForecast` failures (e.g., invalid postcode) and set the `error` state.
-- [X] T011 [US1] In `src/components/ForecastPage.jsx`, use React's `useEffect` to trigger indoor humidity calculation (`calculateIndoorHumidity` from `src/lib/humidity.js`) whenever `ForecastData.outdoorTemperature`, `ForecastData.outdoorHumidity`, or `UserParameters.indoorTemperature` changes.
-- [X] T012 [US1] Pass `ForecastData`, `loading` status, and `error` messages from `src/components/ForecastPage.jsx` down to `src/components/ForecastChart.jsx` and `src/components/DataTable.jsx`.
-- [X] T013 [US1] Modify `src/components/ForecastChart.jsx` to display `ForecastData` and conditionally show a loading indicator based on the `loading` state.
-- [X] T014 [US1] Modify `src/components/DataTable.jsx` to display `ForecastData` and conditionally show a loading indicator based on the `loading` state.
-- [X] T015 [US1] Implement display of user-friendly `error` messages in `src/components/ForecastPage.jsx` (or a sub-component) when the `error` state is set.
+- [x] T003 [US1] Modify `src/components/ParameterForm.jsx` to internally manage `postcode` and `indoorTemperature` state.
+- [x] T004 [US1] Implement debounced change handling for `postcode` input in `src/components/ParameterForm.jsx` using `src/lib/utils/debounce.js`.
+- [x] T005 [US1] Implement debounced change handling for `indoorTemperature` input in `src/components/ParameterForm.jsx` using `src/lib/utils/debounce.js`.
+- [x] T006 [US1] Expose a callback from `src/components/ParameterForm.jsx` to `src/components/ForecastPage.jsx` for debounced parameter changes.
+- [x] T007 [US1] In `src/components/ForecastPage.jsx`, implement state to hold `UserParameters` (postcode, indoor temperature), `ForecastData`, `loading` status, and `error` messages.
+- [x] T008 [US1] In `src/components/ForecastPage.jsx`, use React's `useEffect` to trigger `getForecast` from `src/lib/bbc-client.js` whenever `UserParameters.postcode` changes (debounced).
+- [x] T009 [US1] In `src/components/ForecastPage.jsx`, manage the `loading` state (set `true` before, `false` after) around `getForecast` calls and indoor humidity calculations.
+- [x] T010 [US1] In `src/components/ForecastPage.jsx`, implement error handling for `getForecast` failures (e.g., invalid postcode) and set the `error` state.
+- [x] T011 [US1] In `src/components/ForecastPage.jsx`, use React's `useEffect` to trigger indoor humidity calculation (`calculateIndoorHumidity` from `src/lib/humidity.js`) whenever `ForecastData.outdoorTemperature`, `ForecastData.outdoorHumidity`, or `UserParameters.indoorTemperature` changes.
+- [x] T012 [US1] Pass `ForecastData`, `loading` status, and `error` messages from `src/components/ForecastPage.jsx` down to `src/components/ForecastChart.jsx` and `src/components/DataTable.jsx`.
+- [x] T013 [US1] Modify `src/components/ForecastChart.jsx` to display `ForecastData` and conditionally show a loading indicator based on the `loading` state.
+- [x] T014 [US1] Modify `src/components/DataTable.jsx` to display `ForecastData` and conditionally show a loading indicator based on the `loading` state.
+- [x] T015 [US1] Implement display of user-friendly `error` messages in `src/components/ForecastPage.jsx` (or a sub-component) when the `error` state is set.
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -69,10 +69,10 @@ This can be fully tested by changing a parameter (postcode or indoor temperature
 
 **Purpose**: Improvements that affect multiple user stories or overall quality.
 
-- [X] T016 [P] Add E2E tests for auto-refresh functionality in `tests/e2e/test_auto_refresh.spec.js`, covering the acceptance scenarios (postcode change, temp change, both, loading, error).
-- [X] T017 [P] Add unit tests for the new debounce utility in `tests/unit/test_debounce.test.js`.
-- [X] T018 Review and refine UI/UX for loading states and error messages, ensuring consistency and responsiveness.
-- [X] T019 Verify performance against SC-001 (forecast update within 2 seconds) and SC-003 (loading indicator within 0.5 seconds).
+- [x] T016 [P] Add E2E tests for auto-refresh functionality in `tests/e2e/test_auto_refresh.spec.js`, covering the acceptance scenarios (postcode change, temp change, both, loading, error).
+- [x] T017 [P] Add unit tests for the new debounce utility in `tests/unit/test_debounce.test.js`.
+- [x] T018 Review and refine UI/UX for loading states and error messages, ensuring consistency and responsiveness.
+- [x] T019 Verify performance against SC-001 (forecast update within 2 seconds) and SC-003 (loading indicator within 0.5 seconds).
 
 ---
 

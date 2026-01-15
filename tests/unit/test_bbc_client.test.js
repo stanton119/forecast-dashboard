@@ -12,8 +12,8 @@ describe('BBC Weather API Client', () => {
           detailed: {
             reports: [
               {
-                localDate: "2026-01-12",
-                timeslot: "12:00",
+                localDate: '2026-01-12',
+                timeslot: '12:00',
                 humidity: 75,
                 temperatureC: 9,
               },
@@ -29,13 +29,15 @@ describe('BBC Weather API Client', () => {
 
     const forecast = await getForecast('SW7');
 
-    expect(fetch).toHaveBeenCalledWith('https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/SW7');
+    expect(fetch).toHaveBeenCalledWith(
+      'https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/SW7'
+    );
     expect(forecast).toEqual([
-        {
-            "timestamp_iso": "2026-01-12T12:00:00.000Z",
-            "outside_humidity_percent": 75,
-            "outside_temp_c": 9,
-        }
+      {
+        timestamp_iso: '2026-01-12T12:00:00.000Z',
+        outside_humidity_percent: 75,
+        outside_temp_c: 9,
+      },
     ]);
   });
 

@@ -12,6 +12,7 @@ This document outlines the key data entities for the humidity forecast feature, 
 Represents the input parameters provided by the user.
 
 - **`postcode`**:
+
   - **Type**: `string`
   - **Description**: A UK postcode. Used to fetch the forecast data.
   - **Validation**: Permissive regex on the client-side. The definitive validation is the API call.

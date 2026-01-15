@@ -37,14 +37,14 @@ While the exact structure is complex, the key fields the application will extrac
             "localDate": "2026-01-12",
             "timeslot": "12:00",
             "humidity": 75,
-            "temperatureC": 9,
+            "temperatureC": 9
             // ... other fields
           },
           {
             "localDate": "2026-01-12",
             "timeslot": "15:00",
             "humidity": 78,
-            "temperatureC": 8,
+            "temperatureC": 8
             // ... other fields
           }
         ]

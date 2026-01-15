@@ -19,7 +19,10 @@ test.describe('Permalink functionality', () => {
     // Wait for URL to update and page to potentially reload with new parameters
     await page.waitForURL((url) => {
       const searchParams = new URLSearchParams(url.search);
-      return searchParams.get('postcode') === newPostcode && searchParams.get('indoorTemp') === newIndoorTemp;
+      return (
+        searchParams.get('postcode') === newPostcode &&
+        searchParams.get('indoorTemp') === newIndoorTemp
+      );
     });
 
     const updatedUrl = page.url();

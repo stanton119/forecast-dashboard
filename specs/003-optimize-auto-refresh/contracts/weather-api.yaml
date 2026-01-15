@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Weather Forecast API
+  version: 1.0.0
+  description: API for fetching weather forecast data. This contract describes the external API interaction that the client-side application utilizes.
+servers:
+  - url: https://api.example.com/v1 # Placeholder for the actual weather API endpoint
+paths:
+  /weather/forecast:
+    get:
+      summary: Get weather forecast
+      operationId: getForecast
+      parameters:
+        - name: postcode
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{1,2}[0-9][A-Z0-9]? [0-9][A-Z]{2}$' # Example: UK postcode pattern
+          description: The postcode for the forecast location.
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2026-01-14'
+          description: The date for which the forecast is requested (YYYY-MM-DD).
+      responses:
+        '200':
+          description: Successful retrieval of weather forecast data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastData'
+        '400':
+          description: Invalid parameters supplied.
+        '500':
+          description: Internal server error.
+components:
+  schemas:
+    ForecastData:
+      type: object
+      properties:
+        location:
+          type: string
+          description: The geographical location for the forecast.
+        date:
+          type: string
+          format: date
+          description: The date of the forecast.
+        outdoorTemperature:
+          type: number
+          format: float
+          description: The outdoor temperature in Celsius.
+        humidity:
+          type: number
+          format: float
+          description: The relative humidity percentage.
+        windSpeed:
+          type: number
+          format: float
+          description: The wind speed in km/h.
+        # Add other relevant forecast attributes as needed
+      required:
+        - location
+        - date
+        - outdoorTemperature
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

@@ -9,22 +9,25 @@
 
 ### Session 2026-01-10
 
-
 - Forecast API availability: the chosen client-side runtime fetch strategy assumes the external forecast API supports CORS or a public JSON endpoint is available; if not, a small proxy or serverless function will be required.
-Integration notes from clarification: client-side runtime fetch selected — the page will fetch forecast data from an external forecast API at runtime in the browser for each view; defaults (SW7, 20°C) are applied client-side when parameters missing.
+  Integration notes from clarification: client-side runtime fetch selected — the page will fetch forecast data from an external forecast API at runtime in the browser for each view; defaults (SW7, 20°C) are applied client-side when parameters missing.
 
 ## Integration & External Dependencies
 
 - **Forecast data provider (initial)**: BBC Weather public data via the aggregated forecast endpoint. The weather data MUST be fetched from:
+
   ```
   https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/{POST_CODE}
   ```
+
   where `{POST_CODE}` is replaced with the user's supplied postcode (URL-encoded as necessary).
 
 - **Expected response shape (summary)**:
+
   - A time-ordered collection of forecast reports. Each report contains a local date, a timeslot, an outdoor humidity value (percent) and an outdoor temperature value (°C).
 
 - **Operational constraints**:
+
   - The client should gracefully handle upstream rate limits and transient errors (retry with backoff and sensible local caching).
   - Validation and user-friendly error messages are required for invalid inputs and upstream failures.
 
@@ -44,13 +47,13 @@ Integration notes from clarification: client-side runtime fetch selected — the
 
 - **Test-First enforcement**: Per the Constitution, work MUST follow a test-first approach. Before implementing any non-trivial feature task, developers MUST add tests that demonstrate the expected behaviour and confirm they fail initially. CI MUST be configured to check that tests exist for new code and pass before merge (see `plan.md` and `tasks.md` updates).
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 <!--
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
   you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
+
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
   - Developed independently
@@ -135,9 +138,9 @@ The product must use a clean, modern website template that prioritises clarity, 
 1. **Given** the site loads on a mobile device, **When** the page is viewed, **Then** the chart, controls, and attribution are usable without horizontal scrolling and controls are finger-sized.
 2. **Given** a colour-blind user, **When** they view the chart, **Then** the two data series remain distinguishable (patterns, markers, or colour choices) and a legend is available.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
@@ -161,7 +164,7 @@ The product must use a clean, modern website template that prioritises clarity, 
 - **IndoorConversion**: Derived series computed from `ForecastSeries` given `indoor_temperature_c` producing `indoor_relative_humidity_percent` per timestamp.
 - **UserParameters**: `postcode` (string), `indoor_temperature_c` (number)
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 <!--
   ACTION REQUIRED: Define measurable success criteria.
