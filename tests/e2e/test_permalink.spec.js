@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
+import mockForecastData from './mock-forecast-data.json'; // Import mock data
 
 test.describe('Permalink functionality', () => {
+  test.beforeEach(async ({ page }) => {
+    // Intercept BBC weather API calls and return mock data
+    await page.route('https://weather-broker-cdn.api.bbci.co.uk/**/*', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockForecastData),
+      });
+    });
+  });
   test('updates URL with new parameters and loads correctly from permalink', async ({ page }) => {
     await page.goto('/');
 
@@ -12,18 +23,30 @@ test.describe('Permalink functionality', () => {
     const newPostcode = 'CB1';
     const newIndoorTemp = '22';
 
-    await page.fill('#postcode', newPostcode);
-    await page.fill('#indoorTemp', newIndoorTemp);
-    await page.click('button:has-text("Get Forecast")');
+    await page.locator('#postcode').clear();
+    await page.locator('#postcode').type(newPostcode);
+    await page.locator('#indoorTemp').clear();
+    await page.locator('#indoorTemp').type(newIndoorTemp);
+    // Allow time for debounced change to be processed
+    await page.waitForTimeout(1000); // Wait for debounce (500ms) + effect to run
 
-    // Wait for URL to update and page to potentially reload with new parameters
+    // Forecast data now loads automatically on parameter change, no "Get Forecast" button click needed.
+    // Instead of waiting for URL, wait for the UI elements to reflect the new data.
+    // Wait for the form fields to update with the new values (as they are controlled components)
+    await expect(page.locator('#postcode')).toHaveValue(newPostcode, { timeout: 10000 });
+    await expect(page.locator('#indoorTemp')).toHaveValue(newIndoorTemp, { timeout: 10000 });
+
+    // Wait for the forecast chart to appear with the new data
+    await expect(page.locator('.recharts-line')).toHaveCount(2, { timeout: 20000 }); // Longer timeout for data fetch
+
+    // Verify the URL has updated after the component state settled and updateUrlParams was called
     await page.waitForURL((url) => {
       const searchParams = new URLSearchParams(url.search);
       return (
         searchParams.get('postcode') === newPostcode &&
         searchParams.get('indoorTemp') === newIndoorTemp
       );
-    });
+    }, { timeout: 10000 }); // Add timeout for robustness, but expect it to pass now
 
     const updatedUrl = page.url();
     expect(updatedUrl).toContain(`postcode=${newPostcode}`);
@@ -32,10 +55,12 @@ test.describe('Permalink functionality', () => {
     // Navigate to the updated URL (permalink)
     await page.goto(updatedUrl);
 
-    // Verify that the chart is still visible with the new parameters
+    // Verify that the chart is still visible with the new parameters after navigating to permalink
+    await page.waitForLoadState('networkidle'); // Ensure data is re-fetched on new page load
     await expect(chart).toBeVisible();
+    await expect(page.locator('.recharts-line')).toHaveCount(2, { timeout: 20000 }); // Longer timeout for data fetch
 
-    // Optionally, verify that the form fields reflect the new parameters from the URL
+    // Verify that the form fields reflect the new parameters from the URL
     await expect(page.locator('#postcode')).toHaveValue(newPostcode);
     await expect(page.locator('#indoorTemp')).toHaveValue(newIndoorTemp);
   });

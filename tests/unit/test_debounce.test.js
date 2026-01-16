@@ -4,7 +4,7 @@ import { debounce } from '../../src/lib/utils/debounce'; // Adjust path as neces
 describe('debounce', () => {
   let func;
   let debouncedFunc;
-  let mockDate;
+
 
   beforeEach(() => {
     func = jest.fn();
