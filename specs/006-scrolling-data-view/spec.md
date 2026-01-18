@@ -7,52 +7,35 @@
 
 ## User Scenarios & Testing _(mandatory)_
 
-### User Story 1 - View Initial Data (Priority: P1)
 
-A user navigates to a page containing a large dataset (e.g., a table with hundreds of rows). The user wants to see the first few rows of data quickly without waiting for the entire dataset to load, so they can get an immediate sense of the content.
 
-**Why this priority**: This is the core of the user experience, providing immediate feedback and improving perceived performance.
+### User Story 1 - Scroll Through Data (Priority: P1)
 
-**Independent Test**: Can be tested by loading a page with a large dataset and verifying that only the first 10 rows are displayed initially and that they render quickly.
+A user navigates to a page containing a dataset. They want to view all the data by scrolling through a designated window, without the need for additional data fetching during scrolling.
 
-**Acceptance Scenarios**:
+**Why this priority**: This provides a focused and manageable way to interact with potentially large datasets that are already available.
 
-1. **Given** a dataset with more than 10 rows, **When** the user loads the page, **Then** only the first 10 rows are displayed.
-2. **Given** a dataset with fewer than 10 rows, **When** the user loads the page, **Then** all rows are displayed.
-
----
-
-### User Story 2 - Scroll to Load More Data (Priority: P1)
-
-The user, viewing the initial 10 rows, wants to see more data. They scroll to the bottom of the list, and the next set of rows is automatically fetched and added to the view, allowing for seamless browsing of the entire dataset.
-
-**Why this priority**: This enables the user to access the full dataset in a progressive and intuitive way.
-
-**Independent Test**: Can be tested by scrolling to the bottom of the initial 10 rows and verifying that more rows are loaded and appended.
+**Independent Test**: Can be tested by loading a page with a dataset and verifying that all data can be viewed by scrolling within the defined window, and no data fetching occurs during this process.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is viewing the first 10 rows of a larger dataset, **When** they scroll to the bottom of the visible rows, **Then** the next set of rows is appended to the view.
-2. **Given** the user is scrolling, **When** new rows are being fetched, **Then** a loading indicator is visible.
-3. **Given** the user has scrolled to the end of the entire dataset, **When** they continue to scroll, **Then** no new rows are loaded and the loading indicator is not shown.
+1. **Given** a dataset is displayed within a scrolling window, **When** the user scrolls, **Then** all rows of the dataset become visible as they scroll.
+2. **Given** a dataset is displayed within a scrolling window, **When** the user scrolls to the end, **Then** the last row of the dataset is visible, and no new data is fetched.
 
 ---
 
 ### Edge Cases
 
-- What happens when the data loading fails? A user-friendly error message should be displayed, possibly with a retry option.
-- What happens if the user scrolls up and down quickly? The system should handle this gracefully, avoiding duplicate requests or flickering.
+- What happens if the user scrolls up and down quickly? The system should handle this gracefully, avoiding flickering or performance issues.
+- What happens if the dataset is empty? The scrolling window should display an appropriate message (e.g., "No data available").
 
 ## Requirements _(mandatory)_
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST display a maximum of 10 data rows upon initial load.
-- **FR-002**: The system MUST detect when the user has scrolled to the end of the currently displayed rows.
-- **FR-003**: The system MUST trigger a request for the next set of data when the user scrolls to the end.
-- **FR-004**: The system MUST append the newly fetched data to the existing view.
-- **FR-005**: The system SHOULD display a visual indicator while data is being fetched.
-- **FR-006**: The system MUST cease fetching data when the end of the dataset is reached.
+- **FR-001**: The system MUST display the entire dataset within a scrolling window.
+- **FR-002**: The scrolling window MUST allow users to view all data rows by scrolling vertically.
+- **FR-003**: The system MUST NOT initiate any data fetching requests when the user scrolls within the window.
 
 ### Key Entities _(include if feature involves data)_
 
@@ -62,7 +45,5 @@ The user, viewing the initial 10 rows, wants to see more data. They scroll to th
 
 ### Measurable Outcomes
 
-- **SC-001**: The time to display the initial 10 rows of data shall be less than 1 second, regardless of the total dataset size (up to 10,000 rows).
-- **SC-002**: 95% of subsequent data fetches (triggered by scrolling) must complete and render in under 500 milliseconds.
-- **SC-003**: The feature should result in a 50% reduction in initial page load time for pages with large datasets.
-- **SC-004**: User task completion rate for finding an item in a large list should improve by 25%.
+- **SC-001**: User task completion rate for finding an item in a large list should improve by 25%.
+- **SC-002**: The scrolling experience must be smooth, with no noticeable lag or flickering, even for datasets up to 10,000 rows.
