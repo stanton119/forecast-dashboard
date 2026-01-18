@@ -1,0 +1,31 @@
+name: Deploy to GitHub Pages # Workflow name for GitHub Actions UI
+
+on: # Event trigger for the workflow
+    push: # Trigger on push events
+        branches: # Only run when pushing to the main branch
+      - main
+
+jobs: # Define jobs that run in the workflow
+    build-and-deploy: # Job to build and deploy the Astro project
+        runs-on: # Specify the runner environment # Event trigger for the workflow ubuntu-latest
+    steps:
+            - name: Checkout Repository # Check out the repository code
+        uses: actions/checkout@v4
+
+            - name: Setup Node.js Environment # Set up Node.js for building
+        uses: actions/setup-node@v4
+        with:
+          node-version: # Event trigger for the workflow '20'
+
+            - name: Install Project Dependencies # Install npm packages
+        run: npm ci
+
+            - name: Build Astro Project # Build the static Astro site
+        run: npm run build
+
+      - name: Deploy to GitHub Pages # Workflow name for GitHub Actions UI 🚀
+        uses: peaceiris/actions-gh-pages@v3
+                if: github.ref == 'refs/heads/main' # Only deploy from the main branch
+        with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }} # GITHUB_TOKEN is automatically provided by GitHub Actions
+                    publish_dir: ./dist # Directory containing the built static files
