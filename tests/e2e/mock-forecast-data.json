@@ -26,6 +26,66 @@
             "timeslot": "18:00",
             "humidity": 78,
             "temperatureC": 11
+          },
+          {
+            "localDate": "2026-01-16",
+            "timeslot": "09:00",
+            "humidity": 82,
+            "temperatureC": 9
+          },
+          {
+            "localDate": "2026-01-16",
+            "timeslot": "12:00",
+            "humidity": 77,
+            "temperatureC": 11
+          },
+          {
+            "localDate": "2026-01-16",
+            "timeslot": "15:00",
+            "humidity": 72,
+            "temperatureC": 13
+          },
+          {
+            "localDate": "2026-01-16",
+            "timeslot": "18:00",
+            "humidity": 80,
+            "temperatureC": 10
+          },
+          {
+            "localDate": "2026-01-17",
+            "timeslot": "09:00",
+            "humidity": 85,
+            "temperatureC": 8
+          },
+          {
+            "localDate": "2026-01-17",
+            "timeslot": "12:00",
+            "humidity": 80,
+            "temperatureC": 10
+          },
+          {
+            "localDate": "2026-01-17",
+            "timeslot": "15:00",
+            "humidity": 75,
+            "temperatureC": 12
+          },
+          {
+            "localDate": "2026-01-17",
+            "timeslot": "18:00",
+            "humidity": 83,
+            "temperatureC": 9
+          },
+          {
+            "localDate": "2026-01-18",
+            "timeslot": "09:00",
+            "humidity": 88,
+            "temperatureC": 7
+          },
+          {
+            "localDate": "2026-01-18",
+            "timeslot": "12:00",
+            "humidity": 84,
+            "temperatureC": 9
           }
         ]
       }
