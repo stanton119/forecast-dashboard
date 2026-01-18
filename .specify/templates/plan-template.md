@@ -31,7 +31,12 @@
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-[Gates determined based on constitution file]
+Based on the project constitution, the following gates apply:
+- **Spec-Driven**: Does this plan derive from a clear `spec.md`?
+- **Test-Driven**: Does the plan include tasks for writing tests?
+- **Modular**: Is the proposed project structure modular and components reusable?
+- **Client-Side First**: Does the plan account for client-side rendering and performance?
+- **Consistent UI/UX**: Does the plan consider UI/UX consistency with the existing dashboard?
 
 ## Project Structure
 

@@ -1,73 +1,61 @@
-# [PROJECT_NAME] Constitution
+<!--
+Sync Impact Report
+====================
+Version change: template -> 1.0.0
+Modified principles:
+  - [PRINCIPLE_1_NAME] -> "Spec-Driven Development"
+  - [PRINCIPLE_2_NAME] -> "Test-Driven Development (TDD)"
+  - [PRINCIPLE_3_NAME] -> "Modular & Reusable Components"
+  - [PRINCIPLE_4_NAME] -> "Client-Side First, with Server-Side Fallback"
+  - [PRINCIPLE_5_NAME] -> "Clear and Consistent UI/UX"
+Added sections: None
+Removed sections: None
+Templates requiring updates:
+  - ✅ updated: .specify/templates/plan-template.md
+  - ✅ updated: .specify/templates/spec-template.md
+  - ✅ updated: .specifyy/templates/tasks-template.md
+  - ⚠ pending: .specify/templates/commands/*.md (no changes needed for now)
+Follow-up TODOs: None
+-->
 
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Forecast Dashboard Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
+### I. Spec-Driven Development
 
-<!-- Example: I. Library-First -->
+Every new feature or significant change must begin with a clear, written specification (`spec.md`). This specification should define the feature's scope, user stories, requirements, and success criteria before implementation begins. The goal is to ensure clarity, alignment, and a shared understanding of what is being built.
 
-[PRINCIPLE_1_DESCRIPTION]
+### II. Test-Driven Development (TDD)
 
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+All new functionality must be accompanied by tests. Where possible, tests should be written before the implementation code, following a red-green-refactor cycle. This includes unit tests for individual components and E2E tests for user-facing features. This ensures code quality, maintainability, and confidence in changes.
 
-### [PRINCIPLE_2_NAME]
+### III. Modular & Reusable Components
 
-<!-- Example: II. CLI Interface -->
+The UI should be built with modular, reusable React components. Each component should have a single, well-defined responsibility and be independent of other components where possible. This promotes code reuse, simplifies maintenance, and improves testability.
 
-[PRINCIPLE_2_DESCRIPTION]
+### IV. Client-Side First, with Server-Side Fallback
 
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+The application should be designed to be primarily client-side rendered for a fast, interactive user experience. However, it should gracefully degrade or provide server-side rendering (SSR) where appropriate, especially for initial page loads and SEO. This principle is supported by the use of Astro with React.
 
-### [PRINCIPLE_3_NAME]
+### V. Clear and Consistent UI/UX
 
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+The user interface should be clean, intuitive, and consistent across all forecast types and components. This includes a consistent color scheme, typography, and interaction patterns. The goal is to provide a seamless and user-friendly experience, even as new forecast types are added.
 
-[PRINCIPLE_3_DESCRIPTION]
+## Development Workflow
 
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+The development process for new features follows the `speckit` workflow, which includes:
+1.  **Specification (`/speckit.specify`)**: Define the feature.
+2.  **Planning (`/speckit.plan`)**: Create a technical plan.
+3.  **Task Generation (`/speckit.tasks`)**: Break down the plan into actionable tasks.
+4.  **Implementation (`/speckit.implement`)**: Execute the tasks.
 
-### [PRINCIPLE_4_NAME]
-
-<!-- Example: IV. Integration Testing -->
-
-[PRINCIPLE_4_DESCRIPTION]
-
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-
-[PRINCIPLE_5_DESCRIPTION]
-
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-## [SECTION_2_NAME]
-
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+All changes must be reviewed via a pull request process.
 
 ## Governance
 
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This constitution supersedes all other practices and conventions. Amendments to this constitution require a documented proposal, review, and approval from the project maintainers.
 
-[GOVERNANCE_RULES]
+All code reviews must verify compliance with these principles. Any deviation from these principles must be explicitly justified and documented.
 
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-01-15

@@ -7,11 +7,12 @@ Specs:
 1. Initial implementation
 2. Auto reloading following parameter changes.
 3. Auto refresh now optimizes API calls, avoiding re-fetching if only indoor temperature calculations change.
-4. add zooming on the datetime axis
+4. load forecast on page load
 5. remove powered by gemini, attribution is only to bbc weather
-6. data view to be a scrolling window
-7. load forecast on page load
+6. add zooming on the datetime axis
+7. data view to be a scrolling window
 8. auto location getting, or remember last location they used
+9. deploy to github pages
 
 ## Feature: Auto-show Forecast on Page Load
 

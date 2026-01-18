@@ -15,7 +15,6 @@ const Attribution = () => {
         </a>
         .
       </p>
-      <p>Powered by Gemini.</p>
     </div>
   );
 };

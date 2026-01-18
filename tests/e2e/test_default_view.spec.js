@@ -24,3 +24,17 @@ test('Default view shows the forecast chart', async ({ page }) => {
   const lines = chart.locator('path.recharts-curve');
   await expect(lines).toHaveCount(2, { timeout: 10000 }); // Add timeout for robustness
 });
+
+test('Default view shows correct attribution', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  const attribution = page.locator('#attribution');
+
+  // Assert that "BBC Weather" link is present
+  await expect(attribution.locator('a[href="https://www.bbc.co.uk/weather/"]')).toBeVisible();
+
+  // Assert that "Powered by Gemini" is NOT present
+  // This is the part that should fail initially
+  await expect(attribution).not.toContainText('Powered by Gemini');
+});

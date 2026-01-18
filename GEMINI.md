@@ -36,7 +36,6 @@ Node.js (as per project environment), Astro (^5.16.8), React (18.2.0): Follow st
 - 004-auto-show-forecast: Added JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, Vitest, Playwright, Zod
 
 - 003-optimize-auto-refresh: Added JavaScript/TypeScrip + Astro, React, Tailwind CSS. `bbc-client.js` for external API interaction.
-- 002-auto-refresh-forecast: Added JavaScript (modern, using ES modules, JSX syntax) + Astro, React (for components), custom `bbc-client.js` for external API interaction.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
