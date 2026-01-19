@@ -1,53 +1,66 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getForecast } from '../lib/bbc-client.js';
 import { getInsideRelativeHumidity } from '../lib/humidity.js';
-import { getParamsFromUrl, updateUrlParams } from '../lib/url.js';
-import { getDefaultLocation, determinePrioritizedLocation } from '../lib/location.js'; // T003, T004
-import { getFriendlyErrorMessage } from '../lib/errors.js'; // T006
+// Removed: import { getParamsFromUrl, updateUrlParams } from '../lib/url.js';
+import { getDefaultLocation, determinePrioritizedLocation } from '../lib/location.js';
+import { getFriendlyErrorMessage } from '../lib/errors.js';
 import { downloadCsv } from '../lib/exportCsv.js';
-import { areOutdoorParametersChanged } from '../lib/utils/param-utils.js';
+import { debounce } from '../lib/utils/debounce.js';
+import { useUrlParams } from '../lib/hooks/useUrlParams.js'; // New import
 
 import ParameterForm from './ParameterForm.jsx';
 import ForecastChart from './ForecastChart.jsx';
 import Attribution from './Attribution.jsx';
 import ShareButton from './ShareButton.jsx';
 import DataTable from './DataTable.jsx';
-import RetryButton from './RetryButton.jsx'; // T007
+import RetryButton from './RetryButton.jsx';
 
 const ForecastPage = () => {
-  // Read initial parameters from URL
-  const initialUrlParams = getParamsFromUrl(); // Includes postcode, latitude, longitude, indoorTemp
+  const { postcode, indoorTemp, updateParams } = useUrlParams();
 
-  // Determine initial prioritized location
-  const defaultLocation = getDefaultLocation(); // T003
-  const initialPrioritizedLocation = determinePrioritizedLocation(initialUrlParams, defaultLocation); // T004
-
-  // State for the currently displayed/fetched location and indoor temperature
-  const [currentLocation, setCurrentLocation] = useState({
-    postcode: initialPrioritizedLocation.postcode || null,
-    latitude: initialPrioritizedLocation.latitude || null,
-    longitude: initialPrioritizedLocation.longitude || null,
-    city: initialPrioritizedLocation.city || null, // Keep city for display if needed
-  });
-  const [currentIndoorTemp, setCurrentIndoorTemp] = useState(initialUrlParams.indoorTemp || 20);
-
-  // Use refs to track the last successfully fetched location and indoorTemp without causing re-renders
-  const oldLocationRef = useRef(currentLocation);
-  const oldIndoorTempRef = useRef(currentIndoorTemp);
+  // State for raw postcode input (for immediate display in form)
+  const [rawPostcode, setRawPostcode] = useState(postcode);
 
   const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Function to fetch forecast data
-  const fetchForecast = useCallback(async (locationToFetch, indoorTempToUse) => {
+  // Debounced function to update URL with new postcode
+  const debouncedUpdatePostcode = useCallback(
+    debounce((newPostcode) => {
+      updateParams(newPostcode, indoorTemp);
+    }, 500),
+    [indoorTemp, updateParams]
+  );
+
+  // Handlers for ParameterForm changes
+  const handlePostcodeChange = useCallback((newPostcode) => {
+    setRawPostcode(newPostcode); // Update raw input immediately
+    debouncedUpdatePostcode(newPostcode);
+  }, [debouncedUpdatePostcode]);
+
+  const handleIndoorTempChange = useCallback((newIndoorTemp) => {
+    updateParams(postcode, newIndoorTemp); // Update URL and trigger recalculation immediately
+  }, [postcode, updateParams]);
+
+
+  // Function to fetch forecast data (now dependent only on effectivePostcode, not rawPostcode)
+  const fetchForecast = useCallback(async (postcodeToFetch, indoorTempToUse) => {
+    if (!postcodeToFetch) {
+      setForecastData([]);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    setForecastData([]); // Clear previous data temporarily
+    setForecastData([]);
 
     try {
-      // T005: Use the refactored getForecast that accepts a location object
-      const rawForecast = await getForecast(locationToFetch);
+      // Use the refactored getForecast that accepts a location object (assuming getForecast can take postcode string)
+      // If getForecast expects an object with latitude/longitude, this will need further adjustment,
+      // but for now, we pass postcode directly.
+      const rawForecast = await getForecast({ postcode: postcodeToFetch });
 
       const processedForecast = rawForecast.map((item) => ({
         timestamp_iso: item.timestamp_iso,
@@ -60,59 +73,37 @@ const ForecastPage = () => {
         ),
       }));
       setForecastData(processedForecast);
-      oldLocationRef.current = locationToFetch; // Update ref directly
-      oldIndoorTempRef.current = indoorTempToUse; // Update ref directly
     } catch (err) {
-      setError(getFriendlyErrorMessage(err)); // T006: Use friendly error message
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  }, []); // Dependencies for useCallback. No external deps needed if states are passed as args.
+  }, []);
 
-  // Handle retry
-  const handleRetry = () => {
-    fetchForecast(currentLocation, currentIndoorTemp);
-  };
-
-  // Effect for initial load and when location/indoorTemp from form changes
+  // Effect for initial load and when actual postcode from URL changes
   useEffect(() => {
-    // Update URL when postcode or indoorTemp changes (from form or initial load)
-    updateUrlParams(currentLocation.postcode, currentIndoorTemp);
+    // Only fetch new data if the effective postcode (from URL) changes
+    fetchForecast(postcode, indoorTemp);
+  }, [postcode, fetchForecast]);
 
-    const outdoorParamsChanged = areOutdoorParametersChanged(oldLocationRef.current, currentLocation);
-    const indoorTempChanged = oldIndoorTempRef.current !== currentIndoorTemp;
-
-    // T008: Trigger initial fetch or fetch when outdoor params change
-    if (forecastData.length === 0 || outdoorParamsChanged) {
-      fetchForecast(currentLocation, currentIndoorTemp);
-    } else if (indoorTempChanged && forecastData.length > 0) {
-      // Only indoor temp changed, and we have existing forecast data to recalculate
+  // Effect for when only indoorTemp changes (recalculate existing data)
+  useEffect(() => {
+    if (forecastData.length > 0 && indoorTemp !== undefined) {
       const recalculatedForecast = forecastData.map((item) => ({
         ...item,
         inside_relative_humidity_percent: getInsideRelativeHumidity(
           item.outside_temp_c,
           item.outside_humidity_percent,
-          currentIndoorTemp
+          indoorTemp
         ),
       }));
       setForecastData(recalculatedForecast);
-      oldIndoorTempRef.current = currentIndoorTemp; // Update ref directly
-    } else if (indoorTempChanged && forecastData.length === 0) {
-      // Indoor temp changed but no forecast data to recalculate, need to fetch
-      fetchForecast(currentLocation, currentIndoorTemp);
     }
-    // If neither outdoor nor indoor params changed, do nothing.
-  }, [currentLocation, currentIndoorTemp, fetchForecast, forecastData.length]); // Re-added forecastData.length as dependency for initial fetch logic
+  }, [indoorTemp]); // No need to depend on forecastData.length, if it's empty, this effect won't do anything.
 
-  // handleParameterChange is now called by the debounced ParameterForm
-  const handleParameterChange = (newPostcodeFromForm, newIndoorTempFromForm) => {
-    setCurrentLocation(prevLocation => ({
-      ...prevLocation,
-      postcode: newPostcodeFromForm, // Update postcode from form
-      latitude: null, // Clear lat/lon when postcode is manually entered from form
-      longitude: null,
-    }));
-    setCurrentIndoorTemp(newIndoorTempFromForm);
+  const handleRetry = () => {
+    // Retry with current URL parameters
+    fetchForecast(postcode, indoorTemp);
   };
 
   const handleDownloadCsv = () => {
@@ -123,9 +114,10 @@ const ForecastPage = () => {
     <>
       <section id="parameter-form" className="mb-8">
         <ParameterForm
-          onParameterChange={handleParameterChange}
-          currentPostcode={currentLocation.postcode || ''}
-          currentIndoorTemp={currentIndoorTemp}
+          postcode={rawPostcode} // Display raw input for better UX
+          indoorTemp={indoorTemp} // Display indoorTemp from URL (actual state)
+          onPostcodeChange={handlePostcodeChange}
+          onIndoorTempChange={handleIndoorTempChange}
           isLoading={loading}
         />
         <div className="flex justify-center space-x-4 mt-4">
@@ -146,7 +138,7 @@ const ForecastPage = () => {
       {error && (
         <div className="text-center text-red-500 p-4">
           <p>{error}</p>
-          <RetryButton onRetry={handleRetry} className="mt-2" /> {/* T007: Retry Button */}
+          <RetryButton onRetry={handleRetry} className="mt-2" />
         </div>
       )}
 
