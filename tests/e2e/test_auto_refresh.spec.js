@@ -13,7 +13,7 @@ test.describe('Auto-Refresh Optimization', () => {
     });
 
     // Navigate to the forecast page before each test
-    await page.goto('/');
+    await page.goto('/?postcode=SW7');
     await page.waitForLoadState('networkidle'); // Wait for network to be idle after page load
     // Wait for the initial forecast data to load
     await expect(page.locator('#forecast-chart')).toBeVisible();

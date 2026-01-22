@@ -1,5 +1,6 @@
 // tests/unit/test_debounce.test.js
 import { debounce } from '../../src/lib/utils/debounce'; // Adjust path as necessary
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('debounce', () => {
   let func;
@@ -7,13 +8,13 @@ describe('debounce', () => {
 
 
   beforeEach(() => {
-    func = jest.fn();
-    jest.useFakeTimers();
+    func = vi.fn();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   test('should execute the function only once after a delay', () => {
@@ -27,18 +28,18 @@ describe('debounce', () => {
     expect(func).not.toHaveBeenCalled();
 
     // Advance timers by less than the delay
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).not.toHaveBeenCalled();
 
     // Advance timers by more than the delay
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).toHaveBeenCalledTimes(1);
 
     // Call again, and ensure it's debounced again
     debouncedFunc();
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).toHaveBeenCalledTimes(1);
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).toHaveBeenCalledTimes(2);
   });
 
@@ -46,9 +47,9 @@ describe('debounce', () => {
     debouncedFunc = debounce(func, 100);
     const context = { a: 1 };
     debouncedFunc.call(context, 'arg1', 'arg2');
-    jest.runAllTimers();
+    vi.runAllTimers();
     expect(func).toHaveBeenCalledWith('arg1', 'arg2');
-    expect(func).toHaveBeenCalledOnLastCallWith('arg1', 'arg2'); // Jest specific assertion
+    expect(func.mock.calls[func.mock.calls.length - 1]).toEqual(['arg1', 'arg2']);
     expect(func).toHaveBeenCalledTimes(1);
   });
 
@@ -60,10 +61,10 @@ describe('debounce', () => {
     expect(func).toHaveBeenCalledTimes(1);
 
     debouncedFunc('second'); // Should not call immediately again
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).toHaveBeenCalledTimes(1);
 
-    jest.advanceTimersByTime(50); // After delay, it's ready for another immediate call
+    vi.advanceTimersByTime(50); // After delay, it's ready for another immediate call
     debouncedFunc('third');
     expect(func).toHaveBeenCalledWith('third');
     expect(func).toHaveBeenCalledTimes(2);
@@ -75,11 +76,11 @@ describe('debounce', () => {
     debouncedFunc('a'); // Called immediately
     expect(func).toHaveBeenCalledWith('a');
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     debouncedFunc('b'); // Should not call immediately, should reset timer
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(func).toHaveBeenCalledTimes(1); // Still only one call
-    jest.advanceTimersByTime(50); // Timer expires, function is ready again
+    vi.advanceTimersByTime(50); // Timer expires, function is ready again
     debouncedFunc('c');
     expect(func).toHaveBeenCalledWith('c');
     expect(func).toHaveBeenCalledTimes(2);

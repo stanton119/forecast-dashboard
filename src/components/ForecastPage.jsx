@@ -111,7 +111,7 @@ const ForecastPage = () => {
   };
 
   return (
-    <>
+    <div data-testid="forecast-page">
       <section id="parameter-form" className="mb-8">
         <ParameterForm
           postcode={rawPostcode} // Display raw input for better UX
@@ -161,7 +161,7 @@ const ForecastPage = () => {
       <section id="attribution">
         <Attribution />
       </section>
-    </>
+    </div>
   );
 };
 

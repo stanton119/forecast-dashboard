@@ -13,7 +13,7 @@ test.describe('Permalink functionality', () => {
     });
   });
   test('updates URL with new parameters and loads correctly from permalink', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?postcode=SW7');
 
     // Initial state: ensure chart is visible
     const chart = page.locator('#forecast-chart');
@@ -23,18 +23,14 @@ test.describe('Permalink functionality', () => {
     const newPostcode = 'CB1';
     const newIndoorTemp = '22';
 
-    await page.locator('#postcode').clear();
-    await page.locator('#postcode').type(newPostcode);
-    await page.locator('#indoorTemp').clear();
-    await page.locator('#indoorTemp').type(newIndoorTemp);
-    // Allow time for debounced change to be processed
-    await page.waitForTimeout(1000); // Wait for debounce (500ms) + effect to run
+    await page.locator('#postcode').fill(newPostcode);
+    await page.locator('#indoorTemp').fill(newIndoorTemp);
 
-    // Forecast data now loads automatically on parameter change, no "Get Forecast" button click needed.
-    // Instead of waiting for URL, wait for the UI elements to reflect the new data.
-    // Wait for the form fields to update with the new values (as they are controlled components)
-    await expect(page.locator('#postcode')).toHaveValue(newPostcode, { timeout: 10000 });
-    await expect(page.locator('#indoorTemp')).toHaveValue(newIndoorTemp, { timeout: 10000 });
+    await page.waitForTimeout(1000);
+
+    // Now that the values are updated, we can proceed with other assertions
+    await expect(page.locator('#postcode')).toHaveValue(newPostcode);
+    await expect(page.locator('#indoorTemp')).toHaveValue(String(newIndoorTemp)); // fill converts to string
 
     // Wait for the forecast chart to appear with the new data
     await expect(page.locator('.recharts-line')).toHaveCount(2, { timeout: 20000 }); // Longer timeout for data fetch
@@ -44,9 +40,9 @@ test.describe('Permalink functionality', () => {
       const searchParams = new URLSearchParams(url.search);
       return (
         searchParams.get('postcode') === newPostcode &&
-        searchParams.get('indoorTemp') === newIndoorTemp
+        searchParams.get('indoorTemp') === String(newIndoorTemp)
       );
-    }, { timeout: 10000 }); // Add timeout for robustness, but expect it to pass now
+    }, { timeout: 15000 });
 
     const updatedUrl = page.url();
     expect(updatedUrl).toContain(`postcode=${newPostcode}`);

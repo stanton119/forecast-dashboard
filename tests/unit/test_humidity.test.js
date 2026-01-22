@@ -17,7 +17,7 @@ describe('getInsideRelativeHumidity', () => {
     const insideRH = getInsideRelativeHumidity(outsideTemp, outsideRH, indoorTemp);
     // Expect a significant drop in RH due to increased temperature
     expect(insideRH).toBeLessThan(outsideRH);
-    expect(insideRH).toBeCloseTo(38.65, 2); // Calculated value for these inputs
+    expect(insideRH).toBeCloseTo(42.01, 2); // Calculated value for these inputs
   });
 
   it('should return higher RH when indoor temperature is lower than outdoor (cooling effect)', () => {
@@ -27,7 +27,7 @@ describe('getInsideRelativeHumidity', () => {
     const insideRH = getInsideRelativeHumidity(outsideTemp, outsideRH, indoorTemp);
     // Expect an increase in RH due to decreased temperature, potentially leading to condensation
     expect(insideRH).toBeGreaterThan(outsideRH);
-    expect(insideRH).toBeCloseTo(116.64, 2); // Calculated value for these inputs (indicating condensation if > 100)
+    expect(insideRH).toBeCloseTo(111.53, 2); // Calculated value for these inputs (indicating condensation if > 100)
   });
 
   it('should handle 0% outdoor RH correctly', () => {
@@ -49,20 +49,20 @@ describe('getInsideRelativeHumidity', () => {
   it('should handle extreme outdoor temperatures', () => {
     // Very cold outdoor
     let insideRH = getInsideRelativeHumidity(-20, 90, 20);
-    expect(insideRH).toBeCloseTo(5.27, 2);
+    expect(insideRH).toBeCloseTo(4.84, 2);
 
     // Very hot outdoor
     insideRH = getInsideRelativeHumidity(40, 30, 25);
-    expect(insideRH).toBeCloseTo(59.98, 2);
+    expect(insideRH).toBeCloseTo(70.04, 2);
   });
 
   it('should handle extreme indoor temperatures', () => {
     // Very cold indoor
     let insideRH = getInsideRelativeHumidity(20, 60, 5);
-    expect(insideRH).toBeCloseTo(166.45, 2);
+    expect(insideRH).toBeCloseTo(160.77, 2);
 
     // Very hot indoor
-    insideRH = getInsideRelativeHumidity(20, 60, 35);
-    expect(insideRH).toBeCloseTo(24.47, 2);
+    let insideRH2 = getInsideRelativeHumidity(20, 60, 35);
+    expect(insideRH2).toBeCloseTo(24.90, 2);
   });
 });

@@ -7,6 +7,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-12
 - N/A (Feature is for presentation of already-loaded data) (006-scrolling-data-view)
 - JavaScript/TypeScript (Astro, React, Node.js environment for CI/CD) + Astro, Node.js (for CI environment), npm/yarn (for package management), `actions/checkout`, `actions/setup-node`, `peaceiris/actions-gh-pages` (or similar GitHub Action for deployment) (007-release-github-pages)
 - N/A (static assets served by GitHub Pages) (007-release-github-pages)
+- JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, `bbc-client.js` (for external API interaction) (008-fix-performance-loop)
+- Client-side only (browser memory for current view, no explicit persistence for this fix) (008-fix-performance-loop)
 
 - JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, Vitest, Playwright, Zod (004-auto-show-forecast)
 - N/A (client-side only; potential local/session storage for ephemeral caching) (004-auto-show-forecast)
@@ -36,10 +38,10 @@ tests/
 Node.js (as per project environment), Astro (^5.16.8), React (18.2.0): Follow standard conventions
 
 ## Recent Changes
+- 008-fix-performance-loop: Added JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, `bbc-client.js` (for external API interaction)
 - 007-release-github-pages: Added JavaScript/TypeScript (Astro, React, Node.js environment for CI/CD) + Astro, Node.js (for CI environment), npm/yarn (for package management), `actions/checkout`, `actions/setup-node`, `peaceiris/actions-gh-pages` (or similar GitHub Action for deployment)
 - 006-scrolling-data-view: Added JavaScript (ES2022), TypeScript (via Astro) + Astro, React, Tailwind CSS
 
-- 004-auto-show-forecast: Added JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, Vitest, Playwright, Zod
 
 
 <!-- MANUAL ADDITIONS START -->

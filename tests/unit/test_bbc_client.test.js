@@ -27,7 +27,7 @@ describe('BBC Weather API Client', () => {
       json: () => Promise.resolve(mockSuccessResponse),
     });
 
-    const forecast = await getForecast('SW7');
+    const forecast = await getForecast({ postcode: 'SW7' });
 
     expect(fetch).toHaveBeenCalledWith(
       'https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/SW7'
@@ -47,7 +47,7 @@ describe('BBC Weather API Client', () => {
       status: 404,
     });
 
-    await expect(getForecast('INVALID')).rejects.toThrow('Failed to fetch forecast: 404');
+    await expect(getForecast({ postcode: 'INVALID' })).rejects.toThrow('Failed to fetch forecast for INVALID: 404');
   });
 
   it('should handle server errors', async () => {
@@ -56,6 +56,6 @@ describe('BBC Weather API Client', () => {
       status: 500,
     });
 
-    await expect(getForecast('SW7')).rejects.toThrow('Failed to fetch forecast: 500');
+    await expect(getForecast({ postcode: 'SW7' })).rejects.toThrow('Failed to fetch forecast for SW7: 500');
   });
 });

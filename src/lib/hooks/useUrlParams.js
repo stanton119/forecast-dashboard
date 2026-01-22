@@ -1,8 +1,11 @@
 // src/lib/hooks/useUrlParams.js
 import { useState, useEffect, useCallback } from 'react';
 
-// Helper to parse URL parameters
+// Helper to parse URL parameters, only runs on the client
 function getUrlParams() {
+  if (typeof window === 'undefined') {
+    return { postcode: '', indoorTemp: 20 };
+  }
   const params = new URLSearchParams(window.location.search);
   const postcode = params.get('postcode') || '';
   const indoorTemp = parseInt(params.get('indoorTemp'), 10);
@@ -11,6 +14,9 @@ function getUrlParams() {
 
 // Helper to update URL parameters
 function setUrlParams(postcode, indoorTemp) {
+  if (typeof window === 'undefined') {
+    return;
+  }
   const url = new URL(window.location.href);
   if (postcode) {
     url.searchParams.set('postcode', postcode);
@@ -22,8 +28,14 @@ function setUrlParams(postcode, indoorTemp) {
 }
 
 export function useUrlParams() {
-  const [postcode, setPostcode] = useState(() => getUrlParams().postcode);
-  const [indoorTemp, setIndoorTemp] = useState(() => getUrlParams().indoorTemp);
+  const [postcode, setPostcode] = useState('');
+  const [indoorTemp, setIndoorTemp] = useState(20);
+
+  useEffect(() => {
+    const params = getUrlParams();
+    setPostcode(params.postcode);
+    setIndoorTemp(params.indoorTemp);
+  }, []);
 
   // Effect to update internal state when URL changes (e.g., browser back/forward)
   useEffect(() => {

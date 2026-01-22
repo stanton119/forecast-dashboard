@@ -13,7 +13,7 @@ test.describe('Scrolling Data View', () => {
       });
     });
 
-    await page.goto('/');
+    await page.goto('/?postcode=SW7');
     // Wait for the data to be loaded and the table to be visible
     await page.waitForSelector('#data-table');
   });

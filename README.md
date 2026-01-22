@@ -11,10 +11,10 @@ Specs:
 5. remove powered by gemini, attribution is only to bbc weather
 6. data view to be a scrolling window
 7. deploy to github pages
-8. add zooming on the datetime axis
-9. auto location getting, or remember last location they used
-10. round labels in chart to 0 decimal places
-11. New URL after update - performance issues - repeating
+8. New URL after update - performance issues - repeating
+9. add zooming on the datetime axis
+10. auto location getting, or remember last location they used
+11. round labels in chart to 0 decimal places
 
 ## Feature: Auto-show Forecast on Page Load
 
