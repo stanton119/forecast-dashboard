@@ -1,0 +1,82 @@
+# AGENTS.md
+
+This document provides a comprehensive guide for AI coding assistants to understand and work with the `forecast-site` codebase.
+
+## 1. Project Overview
+
+The `forecast-site` is a client-side single-page application that fetches weather forecast data from the BBC Weather API and calculates the estimated indoor relative humidity based on user-provided parameters. It is built with Astro and React.
+
+- **Primary Goal:** To provide a tool for calculating and visualizing humidity forecasts.
+- **Key Features:** Fetches weather by UK postcode, calculates indoor humidity, displays data in a chart and a table, and provides permalinks for sharing.
+
+## 2. Technology Stack
+
+- **Frameworks:** Astro, React
+- **Styling:** Tailwind CSS
+- **Testing:** Vitest (unit), Playwright (E2E)
+- **Languages:** JavaScript, TypeScript
+- **Key Libraries:** `recharts` (charting), `zod` (validation)
+
+## 3. Directory Structure
+
+The project follows a standard structure for an Astro/React application.
+
+```
+.
+├── src/
+│   ├── components/   # React UI components (.jsx)
+│   ├── layouts/      # Astro layout components (.astro)
+│   ├── lib/          # Core business logic and utilities (.js)
+│   │   ├── hooks/    # Custom React hooks (e.g., useUrlParams)
+│   │   └── utils/    # General utility functions
+│   ├── pages/        # Astro pages, defining routes (e.g., index.astro)
+│   └── styles/       # Global CSS
+└── tests/
+    ├── e2e/          # Playwright end-to-end tests
+    └── unit/         # Vitest unit tests for lib/ modules
+```
+
+## 4. Core Architecture & Workflow
+
+The application uses a simple, client-side architecture.
+
+1.  **Entry Point:** The `src/pages/index.astro` page loads the main `src/components/ForecastPage.jsx` React component.
+2.  **Orchestrator Component:** `ForecastPage.jsx` is the central "smart" component. It manages all application state (postcode, temperature, forecast data, loading/error states).
+3.  **State Management:** State is managed with React hooks (`useState`, `useEffect`). The `src/lib/hooks/useUrlParams.js` custom hook is critical, as it synchronizes the postcode and indoor temperature state with the URL query parameters. This enables permalinking.
+4.  **Data Fetching:** When the `postcode` parameter changes, `ForecastPage.jsx` calls `getForecast()` from `src/lib/bbc-client.js` to fetch new data from the BBC Weather API.
+5.  **Data Processing:** When the `indoorTemp` parameter changes or when new data is fetched, the indoor humidity is recalculated client-side using the `getInsideRelativeHumidity()` function from `src/lib/humidity.js`.
+6.  **Rendering:** The processed data is passed as props to "dumb" presentational components like `ForecastChart.jsx` and `DataTable.jsx`.
+
+## 5. Development & Testing
+
+### Key Scripts
+
+-   **`npm run dev`**: Start the development server.
+-   **`npm run test`**: Run all unit tests with Vitest.
+-   **`npm run test:e2e`**: Run all end-to-end tests with Playwright.
+-   **`npm run lint`**: Check for code quality issues.
+
+### Testing Strategy
+
+The project has a two-tiered testing strategy:
+
+1.  **Unit Tests (`tests/unit/`)**:
+    -   **Purpose:** To test individual functions and modules in `src/lib` in isolation.
+    -   **Framework:** Vitest.
+    -   **Example:** `test_humidity.test.js` verifies the correctness of the humidity calculation logic. `test_bbc_client.test.js` tests the API client, likely by mocking the `fetch` API.
+    -   **To Add a New Test:** Create a `test_my_function.test.js` file in `tests/unit/` and use Vitest's `describe`, `it`, and `expect` functions.
+
+2.  **End-to-End Tests (`tests/e2e/`)**:
+    -   **Purpose:** To test complete user flows in a real browser environment.
+    -   **Framework:** Playwright.
+    -   **API Mocking:** These tests do **not** hit the live BBC Weather API. Instead, they intercept the API calls and return mock data from `tests/e2e/mock-forecast-data.json`.
+    -   **Example:** `test_default_view.spec.js` verifies that the main page loads correctly. `test_export.spec.js` verifies the "Export to CSV" functionality.
+    -   **To Add a New Test:** Create a `test_my_feature.spec.js` file in `tests/e2e/` and use Playwright's API to script browser interactions and make assertions about the UI.
+
+## 6. Coding Patterns & Conventions
+
+-   **Smart vs. Dumb Components:** `ForecastPage.jsx` is the primary "smart" component that handles logic and state. Other components in `src/components/` are largely "dumb" presentational components that receive data and functions as props.
+-   **Hooks for Reusable Logic:** State-related logic that needs to be reused (like URL param management) is extracted into custom hooks (e.g., `useUrlParams`).
+-   **Utility Modules:** Pure functions and non-React logic are kept in modules within `src/lib/` to separate concerns (e.g., `humidity.js`, `postcode.js`).
+-   **Error Handling:** API errors are caught in `bbc-client.js`, and a user-friendly message is generated by `getFriendlyErrorMessage()` from `src/lib/errors.js` before being displayed in the UI.
+-   **Debouncing User Input:** User input for the postcode is debounced in `ForecastPage.jsx` to prevent excessive API calls while the user is typing.
