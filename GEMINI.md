@@ -1,48 +1,82 @@
-# forecast-site Development Guidelines
+# AGENTS.md
 
-Auto-generated from all feature plans. Last updated: 2026-01-12
+This document provides a comprehensive guide for AI coding assistants to understand and work with the `forecast-site` codebase.
 
-## Active Technologies
-- JavaScript (ES2022), TypeScript (via Astro) + Astro, React, Tailwind CSS (006-scrolling-data-view)
-- N/A (Feature is for presentation of already-loaded data) (006-scrolling-data-view)
-- JavaScript/TypeScript (Astro, React, Node.js environment for CI/CD) + Astro, Node.js (for CI environment), npm/yarn (for package management), `actions/checkout`, `actions/setup-node`, `peaceiris/actions-gh-pages` (or similar GitHub Action for deployment) (007-release-github-pages)
-- N/A (static assets served by GitHub Pages) (007-release-github-pages)
-- JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, `bbc-client.js` (for external API interaction) (008-fix-performance-loop)
-- Client-side only (browser memory for current view, no explicit persistence for this fix) (008-fix-performance-loop)
+## 1. Project Overview
 
-- JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, Vitest, Playwright, Zod (004-auto-show-forecast)
-- N/A (client-side only; potential local/session storage for ephemeral caching) (004-auto-show-forecast)
+The `forecast-site` is a client-side single-page application that fetches weather forecast data from the BBC Weather API and calculates the estimated indoor relative humidity based on user-provided parameters. It is built with Astro and React.
 
-- Node.js (as per project environment), Astro (^5.16.8), React (18.2.0) + Astro.js, React, Tailwind CSS, Vitest (for unit tests), Playwright (for E2E tests). No new primary dependencies for this feature. (001-auto-refresh-forecast)
-- N/A (Client-side, data fetched from API) (001-auto-refresh-forecast)
-- JavaScript (modern, using ES modules, JSX syntax) + Astro, React (for components), custom `bbc-client.js` for external API interaction. (002-auto-refresh-forecast)
-- N/A (client-side data handling for current view) (002-auto-refresh-forecast)
-- JavaScript/TypeScrip + Astro, React, Tailwind CSS. `bbc-client.js` for external API interaction. (003-optimize-auto-refresh)
-- Client-side state management using `useState` within React components. Persistence of forecast parameters is currently handled via URL parameters or component props. No explicit client-side persistence (e.g., localStorage) is used for forecast parameters. (003-optimize-auto-refresh)
+- **Primary Goal:** To provide a tool for calculating and visualizing humidity forecasts.
+- **Key Features:** Fetches weather by UK postcode, calculates indoor humidity, displays data in a chart and a table, and provides permalinks for sharing.
 
-- Node.js (as per project environment), Astro (^5.16.8), React (18.2.0) (001-humidity-forecast)
+## 2. Technology Stack
 
-## Project Structure
+- **Frameworks:** Astro, React
+- **Styling:** Tailwind CSS
+- **Testing:** Vitest (unit), Playwright (E2E)
+- **Languages:** JavaScript, TypeScript
+- **Key Libraries:** `recharts` (charting), `zod` (validation)
 
-```text
-src/
-tests/
+## 3. Directory Structure
+
+The project follows a standard structure for an Astro/React application.
+
+```
+.
+├── src/
+│   ├── components/   # React UI components (.jsx)
+│   ├── layouts/      # Astro layout components (.astro)
+│   ├── lib/          # Core business logic and utilities (.js)
+│   │   ├── hooks/    # Custom React hooks (e.g., useUrlParams)
+│   │   └── utils/    # General utility functions
+│   ├── pages/        # Astro pages, defining routes (e.g., index.astro)
+│   └── styles/       # Global CSS
+└── tests/
+    ├── e2e/          # Playwright end-to-end tests
+    └── unit/         # Vitest unit tests for lib/ modules
 ```
 
-## Commands
+## 4. Core Architecture & Workflow
 
-# Add commands for Node.js (as per project environment), Astro (^5.16.8), React (18.2.0)
+The application uses a simple, client-side architecture.
 
-## Code Style
+1.  **Entry Point:** The `src/pages/index.astro` page loads the main `src/components/ForecastPage.jsx` React component.
+2.  **Orchestrator Component:** `ForecastPage.jsx` is the central "smart" component. It manages all application state (postcode, temperature, forecast data, loading/error states).
+3.  **State Management:** State is managed with React hooks (`useState`, `useEffect`). The `src/lib/hooks/useUrlParams.js` custom hook is critical, as it synchronizes the postcode and indoor temperature state with the URL query parameters. This enables permalinking.
+4.  **Data Fetching:** When the `postcode` parameter changes, `ForecastPage.jsx` calls `getForecast()` from `src/lib/bbc-client.js` to fetch new data from the BBC Weather API.
+5.  **Data Processing:** When the `indoorTemp` parameter changes or when new data is fetched, the indoor humidity is recalculated client-side using the `getInsideRelativeHumidity()` function from `src/lib/humidity.js`.
+6.  **Rendering:** The processed data is passed as props to "dumb" presentational components like `ForecastChart.jsx` and `DataTable.jsx`.
 
-Node.js (as per project environment), Astro (^5.16.8), React (18.2.0): Follow standard conventions
+## 5. Development & Testing
 
-## Recent Changes
-- 008-fix-performance-loop: Added JavaScript/TypeScript (Astro v5.16.9, React v19.2.3) + Astro, React, TailwindCSS, `bbc-client.js` (for external API interaction)
-- 007-release-github-pages: Added JavaScript/TypeScript (Astro, React, Node.js environment for CI/CD) + Astro, Node.js (for CI environment), npm/yarn (for package management), `actions/checkout`, `actions/setup-node`, `peaceiris/actions-gh-pages` (or similar GitHub Action for deployment)
-- 006-scrolling-data-view: Added JavaScript (ES2022), TypeScript (via Astro) + Astro, React, Tailwind CSS
+### Key Scripts
 
+-   **`npm run dev`**: Start the development server.
+-   **`npm run test`**: Run all unit tests with Vitest.
+-   **`npm run test:e2e`**: Run all end-to-end tests with Playwright.
+-   **`npm run lint`**: Check for code quality issues.
 
+### Testing Strategy
 
-<!-- MANUAL ADDITIONS START -->
-<!-- MANUAL ADDITIONS END -->
+The project has a two-tiered testing strategy:
+
+1.  **Unit Tests (`tests/unit/`)**:
+    -   **Purpose:** To test individual functions and modules in `src/lib` in isolation.
+    -   **Framework:** Vitest.
+    -   **Example:** `test_humidity.test.js` verifies the correctness of the humidity calculation logic. `test_bbc_client.test.js` tests the API client, likely by mocking the `fetch` API.
+    -   **To Add a New Test:** Create a `test_my_function.test.js` file in `tests/unit/` and use Vitest's `describe`, `it`, and `expect` functions.
+
+2.  **End-to-End Tests (`tests/e2e/`)**:
+    -   **Purpose:** To test complete user flows in a real browser environment.
+    -   **Framework:** Playwright.
+    -   **API Mocking:** These tests do **not** hit the live BBC Weather API. Instead, they intercept the API calls and return mock data from `tests/e2e/mock-forecast-data.json`.
+    -   **Example:** `test_default_view.spec.js` verifies that the main page loads correctly. `test_export.spec.js` verifies the "Export to CSV" functionality.
+    -   **To Add a New Test:** Create a `test_my_feature.spec.js` file in `tests/e2e/` and use Playwright's API to script browser interactions and make assertions about the UI.
+
+## 6. Coding Patterns & Conventions
+
+-   **Smart vs. Dumb Components:** `ForecastPage.jsx` is the primary "smart" component that handles logic and state. Other components in `src/components/` are largely "dumb" presentational components that receive data and functions as props.
+-   **Hooks for Reusable Logic:** State-related logic that needs to be reused (like URL param management) is extracted into custom hooks (e.g., `useUrlParams`).
+-   **Utility Modules:** Pure functions and non-React logic are kept in modules within `src/lib/` to separate concerns (e.g., `humidity.js`, `postcode.js`).
+-   **Error Handling:** API errors are caught in `bbc-client.js`, and a user-friendly message is generated by `getFriendlyErrorMessage()` from `src/lib/errors.js` before being displayed in the UI.
+-   **Debouncing User Input:** User input for the postcode is debounced in `ForecastPage.jsx` to prevent excessive API calls while the user is typing.

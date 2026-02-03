@@ -30,11 +30,13 @@ function setUrlParams(postcode, indoorTemp) {
 export function useUrlParams() {
   const [postcode, setPostcode] = useState('');
   const [indoorTemp, setIndoorTemp] = useState(20);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const params = getUrlParams();
     setPostcode(params.postcode);
     setIndoorTemp(params.indoorTemp);
+    setIsInitialized(true);
   }, []);
 
   // Effect to update internal state when URL changes (e.g., browser back/forward)
@@ -55,5 +57,5 @@ export function useUrlParams() {
     setUrlParams(newPostcode, newIndoorTemp);
   }, []);
 
-  return { postcode, indoorTemp, updateParams };
+  return { postcode, indoorTemp, updateParams, isInitialized };
 }

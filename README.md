@@ -1,8 +1,10 @@
 # Humidity forecast
 
+If you are an agent DO NOT read this file.
+
 Spec driven development
 
-Specs:
+## TODO
 
 1. Initial implementation
 2. Auto reloading following parameter changes.
@@ -15,6 +17,19 @@ Specs:
 9. add zooming on the datetime axis
 10. auto location getting, or remember last location they used
 11. round labels in chart to 0 decimal places
+12. get forecast on initial page load
+
+I  want to simply the url setup.
+
+1. when a page loads request the parameters from the url.
+2. any time parameters in the form are changed then we
+   1. update the page url.
+   2. and update the forecast displayed
+   3. if its a postcode change we debounce this to reduce calls to the weather api
+   4. if its a temperature change we update the forecast straight away
+
+what is the current setup? is it more complex? if so why?
+
 
 ## Feature: Auto-show Forecast on Page Load
 

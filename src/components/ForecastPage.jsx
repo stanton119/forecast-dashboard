@@ -16,10 +16,10 @@ import DataTable from './DataTable.jsx';
 import RetryButton from './RetryButton.jsx';
 
 const ForecastPage = () => {
-  const { postcode, indoorTemp, updateParams } = useUrlParams();
+  const { postcode, indoorTemp, updateParams, isInitialized } = useUrlParams();
 
   // State for raw postcode input (for immediate display in form)
-  const [rawPostcode, setRawPostcode] = useState(postcode);
+  const [rawPostcode, setRawPostcode] = useState(postcode || '');
 
   const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -80,11 +80,29 @@ const ForecastPage = () => {
     }
   }, []);
 
-  // Effect for initial load and when actual postcode from URL changes
+  // Effect 1: Sync rawPostcode input with the canonical postcode from the URL
   useEffect(() => {
-    // Only fetch new data if the effective postcode (from URL) changes
-    fetchForecast(postcode, indoorTemp);
-  }, [postcode, fetchForecast]);
+    setRawPostcode(postcode || '');
+  }, [postcode]);
+
+  // Effect 2: Handle fetching data when the postcode changes
+  useEffect(() => {
+    // Only fetch if we have a postcode. The default-setting effect will handle the empty case.
+    if (postcode) {
+      fetchForecast(postcode, indoorTemp);
+    }
+  }, [postcode, indoorTemp, fetchForecast]);
+
+
+  // Effect 3: Set the default postcode on initial load if no postcode is present
+  useEffect(() => {
+    // Wait until the URL has been parsed before deciding to set a default.
+    if (isInitialized && !postcode) {
+      const defaultLocation = getDefaultLocation();
+      updateParams(defaultLocation.postcode, indoorTemp);
+    }
+    // This effect should only run when `isInitialized` becomes true, or if other params change.
+  }, [isInitialized, postcode, indoorTemp, updateParams]);
 
   // Effect for when only indoorTemp changes (recalculate existing data)
   useEffect(() => {
