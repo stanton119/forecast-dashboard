@@ -5,5 +5,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     include: ['tests/unit/**/*.test.js'],
+    deps: {
+      inline: [
+        'html-encoding-sniffer',
+        '@exodus/bytes',
+      ],
+      interopDefault: true,
+    },
   },
 });
