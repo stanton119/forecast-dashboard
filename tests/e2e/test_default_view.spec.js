@@ -13,14 +13,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Default view shows the forecast chart', async ({ page }) => {
-        await page.goto('/?postcode=SW7');
-        await page.waitForLoadState('networkidle'); // Wait for network to be idle after page load
+  await page.goto('/?postcode=SW7');
+  await page.waitForLoadState('networkidle'); // Wait for network to be idle after page load
       
-        await expect(page.locator('[data-testid="forecast-page"]')).toBeVisible();
+  await expect(page.locator('[data-testid="forecast-page"]')).toBeVisible();
       
-        // Check that the chart is visible
-        const chart = page.locator('#forecast-chart');
-        await expect(chart).toBeVisible();
+  // Check that the chart is visible
+  const chart = page.locator('#forecast-chart');
+  await expect(chart).toBeVisible();
 
   // Check that there are two lines on the chart
   const lines = chart.locator('path.recharts-curve');
@@ -28,7 +28,7 @@ test('Default view shows the forecast chart', async ({ page }) => {
 });
 
 test('Default view shows correct attribution', async ({ page }) => {
-      await page.goto('/?postcode=SW7');  await page.waitForLoadState('networkidle');
+  await page.goto('/?postcode=SW7');  await page.waitForLoadState('networkidle');
 
   const attribution = page.locator('#attribution');
 

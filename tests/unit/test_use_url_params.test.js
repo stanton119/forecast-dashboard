@@ -20,12 +20,12 @@ describe('useUrlParams', () => {
     });
     // Mock window.history
     Object.defineProperty(window, 'history', {
-        configurable: true,
-        value: {
-            ...originalHistory,
-            replaceState: vi.fn()
-        }
-    })
+      configurable: true,
+      value: {
+        ...originalHistory,
+        replaceState: vi.fn()
+      }
+    });
   });
 
   afterEach(() => {
@@ -41,9 +41,9 @@ describe('useUrlParams', () => {
       value: originalLocation,
     });
     Object.defineProperty(window, 'history', {
-        configurable: true,
-        value: originalHistory
-    })
+      configurable: true,
+      value: originalHistory
+    });
   });
 
   test('should return default values if no URL parameters are present', () => {

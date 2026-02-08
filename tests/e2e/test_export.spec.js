@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Data table and CSV export functionality', async ({ page }) => {
-      await page.goto('/?postcode=SW7');  await page.waitForLoadState('networkidle'); // Wait for network to be idle after page load
+  await page.goto('/?postcode=SW7');  await page.waitForLoadState('networkidle'); // Wait for network to be idle after page load
 
   // Verify data table is present
   const dataTable = page.locator('#data-table');

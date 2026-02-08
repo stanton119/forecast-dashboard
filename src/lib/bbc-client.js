@@ -36,9 +36,9 @@ export async function getForecast(location) {
   } else if (latitude && longitude) {
     // This specific BBC client currently only supports postcode.
     // A different API endpoint or reverse geocoding would be needed for lat/lon.
-    throw new Error("BBC client requires a postcode for forecast. Latitude/Longitude only is not supported by this specific client.");
+    throw new Error('BBC client requires a postcode for forecast. Latitude/Longitude only is not supported by this specific client.');
   } else {
-    throw new Error("A valid postcode, latitude, or longitude is required to fetch forecast.");
+    throw new Error('A valid postcode, latitude, or longitude is required to fetch forecast.');
   }
 
   try {
@@ -52,10 +52,11 @@ export async function getForecast(location) {
         if (errorData && errorData.message) {
           errorMessage = `${errorMessage} - ${errorData.message}`;
         }
-      } catch (jsonError) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
         // Ignore JSON parsing error if response is not JSON
       }
-      console.error("API Response not OK. Error Message:", errorMessage); // Added log
+      console.error('API Response not OK. Error Message:', errorMessage); // Added log
       throw new Error(errorMessage);
     }
 
@@ -77,7 +78,7 @@ export async function getForecast(location) {
     return forecastSeries;
   } catch (error) {
     // Catch network errors or other unexpected issues
-    console.error("Error in getForecast:", error);
+    console.error('Error in getForecast:', error);
     throw error; // Re-throw to allow upstream handling
   }
 }

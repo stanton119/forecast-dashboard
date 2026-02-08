@@ -63,7 +63,7 @@ const ForecastChart = ({ forecastData, isLoading, error }) => {
     return '';
   };
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, _label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

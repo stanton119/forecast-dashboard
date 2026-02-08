@@ -8,7 +8,7 @@
 export const getFriendlyErrorMessage = (error) => {
   // Log the actual error for debugging, but return a generic message to the user.
   if (error) {
-    console.error("API Error caught:", error);
+    console.error('API Error caught:', error);
   }
-  return "Forecast data unavailable. Please try again later.";
+  return 'Forecast data unavailable. Please try again later.';
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getForecast } from '../lib/bbc-client.js';
 import { getInsideRelativeHumidity } from '../lib/humidity.js';
 // Removed: import { getParamsFromUrl, updateUrlParams } from '../lib/url.js';
-import { getDefaultLocation, determinePrioritizedLocation } from '../lib/location.js';
+import { getDefaultLocation } from '../lib/location.js';
 import { getFriendlyErrorMessage } from '../lib/errors.js';
 import { downloadCsv } from '../lib/exportCsv.js';
 import { debounce } from '../lib/utils/debounce.js';
